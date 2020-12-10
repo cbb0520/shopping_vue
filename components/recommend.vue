@@ -4,7 +4,7 @@
     <h1 class="title">为您推荐</h1>
     <el-row :gutter="20">
       <el-col :span="12">
-        <div class="grid-content bg-purple" style="height: 350px;cursor: default">
+        <div class="grid-content bg-purple" style="height: 350px;cursor: default;border-radius: 10px;background: #FFF;border: 1px solid gainsboro;">
           <el-row>
             <el-col :span="12">
               <div class="grid-content bg-purple" style="border: 0px;margin: 50px 0px 0px 10px;cursor: default;">
@@ -33,7 +33,7 @@
       </el-col>
 
       <el-col :span="12">
-        <div class="grid-content bg-purple" style="height: 350px;">
+        <div class="grid-content bg-purple" style="height: 350px;cursor: default;border-radius: 10px;background: #FFF;border: 1px solid gainsboro;">
           <div class="grid-content bg-purple" style="height: 350px;cursor: default">
             <el-row>
               <el-col :span="12">
@@ -67,7 +67,6 @@
 </template>
 
 <script>
-
 </script>
 
 <style>
@@ -75,24 +74,20 @@
     float: right;
     margin-right: 20px;
   }
-
   .bg-purple:hover {
     cursor: default;
   }
-
   .food_word {
     font-size: 11px;
     position: absolute;
     margin: 4px 0px 0px 10px;
     font-family: fantasy;
   }
-
   .el-icon-check {
     font-size: 25px;
     font-weight: bold;
     color: limegreen
   }
-
   .food_msg {
     font-size: 13px;
     color: #8d9aa8;

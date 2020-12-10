@@ -2,7 +2,7 @@
 <template>
   <div>
 
-    <el-carousel :interval="4000" type="card" height="320px" width="300px" style="padding-top: 140px;">
+    <el-carousel :interval="4000" type="card" height="320px" width="300px" style="padding-top: 140px;padding-bottom: 30px">
       <el-carousel-item v-for="img in imgs" style="box-shadow: 0 0 5px 3px darkgrey;">
         <el-image :src="img" style="width: 100%;height: 100%"></el-image>
       </el-carousel-item>
@@ -24,19 +24,4 @@
 </script>
 
 <style>
-  .el-carousel__item h3 {
-    color: #475669;
-    font-size: 14px;
-    opacity: 0.75;
-    line-height: 200px;
-    margin: 0;
-  }
-
-  .el-carousel__item:nth-child(2n) {
-    background-color: #99a9bf;
-  }
-
-  .el-carousel__item:nth-child(2n+1) {
-    background-color: #d3dce6;
-  }
 </style>

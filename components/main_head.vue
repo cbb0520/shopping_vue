@@ -1,6 +1,6 @@
 <!--主页头部-->
 <template>
-  <div style="position: fixed;width: 100%;z-index: 999">
+  <div style="position: fixed;width: 100%;z-index: 999;">
 
     <header style="">
       <el-menu class="el-menu-demo" mode="horizontal">
