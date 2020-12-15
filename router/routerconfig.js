@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 
 import Login from "../components/Loginuser.vue";
 import Index from "../components/Index.vue";
+import Register from "../components/Register.vue";
 
 Vue.use(VueRouter)
 
@@ -11,5 +12,6 @@ export  default  new VueRouter({
     {path:"/",redirect:'index'},
     {path:"/login",component:Login,name:"logins", meta: { requiresAuth: true }},
     {path:"/index",component:Index,name:"indexs", meta: { requiresAuth: true }},
+    {path:"/register",component:Register,name:"registers", meta: { requiresAuth: true }},
   ]
 })

@@ -24,7 +24,7 @@
         <el-submenu index="4" style="float: right">
           <template slot="title">
             <el-avatar size="small" src="images/img-5.jpg"></el-avatar>
-            <span>用户名</span>
+            <span>{{indexuaccount}}</span>
           </template>
           <el-menu-item index="4-1"><i class="el-icon-chat-line-square"></i>我的收藏</el-menu-item>
           <el-menu-item index="4-2"><i class="el-icon-star-off"></i>我的收藏</el-menu-item>
@@ -96,12 +96,17 @@
 <script>
   export default {
     data() {
-      return {};
+      return {
+        indexuaccount:sessionStorage.getItem('uaccount')
+      };
     },
     methods: {
       loginout(){
+        sessionStorage.removeItem("uaccount");
         this.$router.push({name:"logins"})
       }
+    },
+    created:function () {
     }
   }
 </script>
