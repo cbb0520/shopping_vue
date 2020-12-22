@@ -54,7 +54,8 @@
         </el-menu-item>
 
       </el-menu>
-      <el-menu class="el-menu-demo" mode="horizontal" style="border-bottom: solid 1px #e6e6e6;box-shadow: 3px 3px 3px rgba(2,2,2,0.1)">
+      <el-menu class="el-menu-demo" mode="horizontal"
+               style="border-bottom: solid 1px #e6e6e6;box-shadow: 3px 3px 3px rgba(2,2,2,0.1)">
 
         <el-menu-item index="1" class="head_foot_type">
           <i class="el-icon-menu"></i>
@@ -78,18 +79,67 @@
         </el-menu-item>
 
         <el-menu-item index="6">
-          <span>联系我们</span>
+          <span @click="goodsmsg">联系我们</span>
         </el-menu-item>
 
-        <el-menu-item index="7" class="shopping" style="float: right;background-color: #f55d2c">
+        <el-menu-item index="7" class="shopping" @click="openShoping" style="float: right;background-color: #f55d2c">
           <i class="el-icon-shopping-cart-2" style="color: #FFFFFF;margin-right: 0px;"></i>
           <span style="color: #FFFFFF">购物车</span>
-          <span style="margin-right: 20px;color: #FFFFFF">3</span>
+          <span style="margin-right: 20px;color: #FFFFFF">{{shoppingCarData.length}}</span>
           <i style="top:54%;color: #FFFFFF;font-size: 15px;" class="el-submenu__icon-arrow el-icon-arrow-down"></i>
         </el-menu-item>
       </el-menu>
     </header>
 
+    <!--购物车查看-->
+    <el-drawer title="我是标题" :visible.sync="drawer" :modal="false" direction="ltr" :with-header="false">
+      <h2 class="shoppingTitle">
+        <el-checkbox name="type" style="position: absolute;margin-left: -6px"
+                     @change="selectAllShopping($event)"></el-checkbox>
+        <span style="color: #f69733;padding-left: 28px;">我的购物车({{shoppingCarData.length}}件)</span>
+        <i class="el-icon-close shopingIcon" @click="closeShoping"></i>
+      </h2>
+      <template>
+        <ul class="infinite-list shoppingUl" v-infinite-scroll="load">
+          <li v-for="goods in shoppingCarData" class="infinite-list-item showShopping">
+            <el-row :gutter="20">
+              <el-col :span="2">
+                <el-checkbox name="type" style="line-height: 120px" v-model="goods.select"
+                             @change="selectGoods($event,goods.gid)"></el-checkbox>
+              </el-col>
+              <el-col :span="8">
+                <div style="border: 1px solid #f7f7f7">
+                  <el-image :src="'http://localhost:8081/src/assets/'+goods.gimgs" @click="goodsmsg"></el-image>
+                </div>
+              </el-col>
+              <el-col :span="14">
+                <div>
+                  <b @click="goodsmsg">{{goods.gname}}</b>
+                  <i class="el-icon-close movieShopping" @click="delShoppingCar(goods.gid)"></i>
+                </div>
+                <div style="margin-top: 60px;">
+                  <el-input-number size="mini" v-model="goods.count" @change="selectCountGoods(goods.gid,goods.count)"
+                                   :min=1 :max=99 style="width: 95px;"></el-input-number>
+                  <span style="color: #f69733;float:right;">￥
+                  <b>{{goods.count * goods.price}}</b></span>
+                </div>
+              </el-col>
+            </el-row>
+          </li>
+        </ul>
+      </template>
+      <h3 style="line-height: 60px;background: #f7f7f7;margin: 0;padding: 10px 33px;border-bottom: 1px solid lightgrey">
+        小计：
+        <span style="color: #f69733;float:right;">￥
+        <b>{{sumPrice}}</b></span>
+      </h3>
+      <div style="padding: 20px 33px;background: #f7f7f7">
+        <el-tooltip class="item" effect="dark" content="我的收获地址" placement="top-start">
+          <el-button type="primary">其他信息</el-button>
+        </el-tooltip>
+        <el-button style="background: #f69733;color: #FFFFFF;float: right">进行结算</el-button>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -97,21 +147,148 @@
   export default {
     data() {
       return {
-        indexuaccount:sessionStorage.getItem('uaccount')
+        drawer: false,
+        count: 0,
+        num: 1,
+        indexuaccount: sessionStorage.getItem('uaccount'),
+        shoppingCarData: [],
+        sumPrice: 0
       };
     },
     methods: {
-      loginout(){
+      loginout() {
         sessionStorage.removeItem("uaccount");
-        this.$router.push({name:"logins"})
+        this.$router.push({name: "logins"})
+      },
+      closeShoping() {
+        this.drawer = false;
+      },
+      openShoping() {
+        this.getShoppingCarData();
+        this.drawer = true;
+      },
+      load() {
+        if (this.count == 10) {
+          return
+        }
+        this.count += 1
+      },
+      handleChange(value) {
+        console.log(value);
+      },
+      getShoppingCarData() {
+        var _this = this;
+        var params = new URLSearchParams();
+        params.append("uaccount", this.indexuaccount);
+        this.$axios.post("/queryGoodsByUid.action", params).then(function (result) {
+          _this.shoppingCarData = result.data;
+          _this.eachShoppingCarData();
+        }).catch(function (error) {
+          alert(error)
+        });
+      },
+      //计算购物车选中的商品总价
+      eachShoppingCarData() {
+        let sumPrice = 0;
+        this.shoppingCarData.forEach((item, index, ary) => {
+          if (item.select == true) {
+            sumPrice += item.price * item.count;
+          }
+        })
+        this.sumPrice = sumPrice;
+      },
+      //修改购物车复选框计算商品总价
+      selectGoods(e, gid) {
+        var _this = this;
+        var params = new URLSearchParams();
+        params.append("gid", gid);
+        params.append("select", e);
+        params.append("uaccount", this.indexuaccount);
+        this.$axios.post("/changeSelect.action", params).then(function (result) {
+          _this.eachShoppingCarData();
+        }).catch(function (error) {
+          alert(error)
+        });
+      },
+      //全选购物车
+      selectAllShopping(e) {
+        //快速勾选
+        this.shoppingCarData.forEach((item, index, ary) => {
+          item.select = e;
+        })
+
+        var _this = this;
+        var params = new URLSearchParams();
+        params.append("select", e);
+        params.append("uaccount", this.indexuaccount);
+        this.$axios.post("/selectAllShopping.action", params).then(function (result) {
+          _this.getShoppingCarData();
+          _this.eachShoppingCarData();
+        }).catch(function (error) {
+          alert(error)
+        });
+      },
+      //修改购物车数量并计算总价
+      selectCountGoods(gid, count) {
+        var _this = this;
+        var params = new URLSearchParams();
+        params.append("gid", gid);
+        params.append("count", count);
+        params.append("uaccount", this.indexuaccount);
+        this.$axios.post("/selectCountGoods.action", params).then(function (result) {
+          _this.eachShoppingCarData();
+        }).catch(function (error) {
+          alert(error)
+        });
+      },
+      //删除购物车里的某项商品
+      delShoppingCar(gid) {
+        this.$confirm('前确认是否删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          var _this = this;
+          var params = new URLSearchParams();
+          params.append("gid", gid);
+          params.append("uaccount", this.indexuaccount);
+          this.$axios.post("/delShoppingCar.action", params).then(function (result) {
+            _this.getShoppingCarData();
+            _this.eachShoppingCarData();
+          }).catch(function (error) {
+            alert(error)
+          });
+        })
+      },
+      goodsmsg(){
+        this.$router.push({name: 'goodsMessage'})
       }
     },
-    created:function () {
+    created: function () {
     }
   }
 </script>
 
 <style>
+  .showShopping {
+    list-style-type: none;
+    height: 120px;
+    border-bottom: 1px solid #efefef;
+    padding: 15px;
+    background: #FFFFFF;
+  }
+
+  .movieShopping {
+    float: right;
+    font-weight: bold;
+    font-size: 18px
+  }
+
+  .movieShopping:hover {
+    cursor: pointer;
+    color: #f55d2c;
+  }
+
   .homeWrap {
     position: absolute;
     top: 0;
@@ -119,12 +296,13 @@
     width: 100%;
     height: 100%;
   }
+
   .el-badge__content.is-fixed {
     top: 15px;
   }
 
   .gwc {
-    width: 38px;
+    width: 37px;
     border-radius: 50%;
     background: bisque;
     border: 0px;
@@ -154,5 +332,35 @@
     border-right: 1px solid lightgrey;
     width: 152px;
     text-align: center
+  }
+
+  .shoppingTitle {
+    font-size: 17px;
+    font-weight: 500;
+    background: #2b2f4c;
+    color: white;
+    padding-left: 20px;
+    margin: 0;
+    line-height: 50px
+  }
+
+  .shopingIcon {
+    color: white;
+    margin-left: 170px;
+    font-size: 22px;
+    font-weight: bold;
+  }
+
+  .shopingIcon:hover {
+    color: #f69733;
+    cursor: pointer;
+  }
+
+  .shoppingUl {
+    overflow: auto;
+    margin: 0;
+    padding: 0;
+    height: 450px;
+    background: #f7f7f7
   }
 </style>
