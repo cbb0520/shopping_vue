@@ -29,7 +29,7 @@
           <el-menu-item index="4-1"><i class="el-icon-chat-line-square"></i>我的收藏</el-menu-item>
           <el-menu-item index="4-2"><i class="el-icon-star-off"></i>我的收藏</el-menu-item>
           <el-menu-item index="4-3"><i class="el-icon-coin"></i>我的钱包</el-menu-item>
-          <el-menu-item index="4-4"><i class="el-icon-location-outline"></i>我的地址</el-menu-item>
+          <el-menu-item index="4-4" @click="myaddress"><i class="el-icon-location-outline"></i>我的地址</el-menu-item>
           <el-menu-item index="4-5"><i class="el-icon-potato-strips"></i>优惠</el-menu-item>
           <el-menu-item index="4-6"><i class="el-icon-warning-outline"></i>常见问题</el-menu-item>
           <el-menu-item index="4-7" @click="loginout"><i class="el-icon-lock"></i>退出</el-menu-item>
@@ -158,6 +158,10 @@
     methods: {
       loginout() {
         sessionStorage.removeItem("uaccount");
+        this.$router.push({name:"logins"})
+      },
+      myaddress(){
+        this.$router.push({name:"mycenters"})
         this.$router.push({name: "logins"})
       },
       closeShoping() {
