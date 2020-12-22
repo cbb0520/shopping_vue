@@ -22,7 +22,7 @@
               placeholder="请输入账号"
               style="width:450px;" v-model="uaccount"
             ></el-input><br><br>
-              <el-input
+              <el-input type="password"
                 prefix-icon="el-icon-lock"
                 placeholder="请输入密码"
                 style="width:450px;" v-model="upassword"
