@@ -17,7 +17,7 @@
           <el-menu-item index="2-3"><i class="el-icon-location-outline"></i>成都</el-menu-item>
         </el-submenu>
 
-        <el-menu-item index="3" style="cursor: default">
+        <el-menu-item index="3">
           <el-input style="width: 300px" size="medium" placeholder="搜索产品" prefix-icon="el-icon-search"></el-input>
           <el-button size="medium" style="background: #f55d2c;color: white;">
             <a href="#goclassify" style="text-decoration: none">搜索</a>
@@ -167,7 +167,7 @@
 </template>
 
 <script>
-  import adduser from "../shanghuElement/shanghuweihu/registermerchant"
+  import Adduser from "../shanghuElement/shanghuweihu/registermerchant"
 
   export default {
     data() {
@@ -322,14 +322,19 @@
         params.append("uid",this.indexuaccount);
         this.$axios.post("/yanzhengUserById.action", params).then(function (result) {
           sessionStorage.setItem("mid", result.data.mid)
+          console.log(result.data.state)
           if (result.data.state == '已同意') {
             _this.$router.push({name: "shanghu3"})
+
           } else if (result.data.state == '未同意') {
             _this.$message({
               message: '警告哦，正在审核中',
               type: 'warning'
             });
-          } else {
+          }else if(result.data.state == '已拒绝'){
+            _this.$message.error('警告哦，已拒绝你的商户申请');
+          }
+          else {
             _this.$confirm('你还不是商户, 是否申请成为商户?', '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消',
@@ -342,6 +347,7 @@
                 message: '已取消'
               });
             });
+
           }
         }).catch(function (error) {
           alert(error)
@@ -376,6 +382,9 @@
         this.$router.push({name: "goodsPay"})
       }
     },
+    components: {
+      adduser:Adduser
+    },
     created: function () {
       this.getUserData();
       if (this.indexuaccount != undefined) {
@@ -386,6 +395,9 @@
 </script>
 
 <style>
+  .v-modal{
+    display: none;
+  }
   .showShopping {
     list-style-type: none;
     height: 120px;

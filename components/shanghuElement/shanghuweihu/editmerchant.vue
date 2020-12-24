@@ -1,11 +1,11 @@
 <template>
     <div>
       <el-form :mode="merchants" label-width="70px">
-        <el-form-item label="商户id" >
-          <el-input v-model="merchants.mid"></el-input>
+        <el-form-item >
+          <el-input v-model="merchants.mid" style="display: none"></el-input>
         </el-form-item>
-        <el-form-item label="用户id" >
-          <el-input v-model="merchants.uid"></el-input>
+        <el-form-item>
+          <el-input v-model="merchants.uid" style="display: none"></el-input>
         </el-form-item>
         <el-form-item label="姓名">
           <el-input v-model="merchants.sname"></el-input>
