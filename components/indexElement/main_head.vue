@@ -1,7 +1,6 @@
 <!--主页头部-->
 <template>
   <div style="position: fixed;width: 100%;z-index: 999;">
-
     <header style="">
       <el-menu class="el-menu-demo" mode="horizontal">
 
@@ -27,7 +26,7 @@
 
         <el-submenu index="4" style="float: right">
           <template slot="title">
-            <el-image size="small" :src="'http://localhost:8081/src/assets/'+userData.uimg" style="width: 30px;height: 30px;"></el-image>
+            <el-avatar size="small" src="images/img-5.jpg"></el-avatar>
             <span>{{indexuaccount}}</span>
           </template>
           <el-menu-item index="4-1"><i class="el-icon-chat-line-square"></i>我的收藏</el-menu-item>
@@ -35,6 +34,8 @@
           <el-menu-item index="4-3"><i class="el-icon-coin"></i>我的钱包</el-menu-item>
           <el-menu-item index="4-4" @click="myaddress"><i class="el-icon-location-outline"></i>我的地址</el-menu-item>
           <el-menu-item index="4-5"><i class="el-icon-potato-strips"></i>优惠</el-menu-item>
+          <el-menu-item index="4-6" @click="yanzheng"><i class="el-icon-warning-outline"></i>商户信息</el-menu-item>
+          <el-menu-item index="4-7" @click="loginout"><i class="el-icon-lock"></i>退出</el-menu-item>
           <el-menu-item index="4-6"><i class="el-icon-warning-outline"></i>常见问题</el-menu-item>
           <el-menu-item index="4-7" @click="loginout"><i class="el-icon-lock"></i>
             <span v-if="this.indexuaccount == undefined">登录</span>
@@ -98,6 +99,16 @@
       </el-menu>
     </header>
 
+    <el-dialog title="注册商户" :visible.sync="dialogVisible" width="50%">
+      <!-- 内容的主体区域 -->
+      <adduser ref="child01"></adduser>
+      <!-- 底部区域 -->
+      <span slot="footer" class="dialog-footer">
+                    <el-button @click="dialogVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="addtmerchant">确 定</el-button>
+                </span>
+    </el-dialog>
+
     <!--购物车查看-->
     <el-drawer title="我是标题" :visible.sync="drawer" :modal="false" direction="ltr" :with-header="false">
       <h2 class="shoppingTitle">
@@ -156,6 +167,8 @@
 </template>
 
 <script>
+  import adduser from "../shanghuElement/shanghuweihu/registermerchant"
+
   export default {
     data() {
       return {
@@ -165,6 +178,8 @@
         indexuaccount: sessionStorage.getItem('uaccount'),
         shoppingCarData: [],
         sumPrice: 0,
+        dialogVisible: false,
+        indexuid:sessionStorage.getItem('uid'),
         userData:{}
       };
     },
@@ -173,24 +188,16 @@
         sessionStorage.removeItem("uaccount");
         this.$router.push({name: "logins"})
       },
-      myaddress() {
-        this.$router.push({name: "mycenters"})
+      myaddress(){
+        this.$router.push({name:"mycenters"})
+        this.$router.push({name: "logins"})
       },
       closeShoping() {
         this.drawer = false;
       },
       openShoping() {
-        if (this.indexuaccount != undefined) {
-          this.getShoppingCarData();
-          this.drawer = true;
-          return;
-        }
-
-        this.$notify({
-          title: '提示！',
-          message: '请先登录，再来查看购物车  `_`',
-          position: 'top-right'
-        });
+        this.getShoppingCarData();
+        this.drawer = true;
       },
       load() {
         if (this.count == 10) {
@@ -301,7 +308,68 @@
         }).catch(function (error) {
           alert(error)
         });
+      },
+      yanzheng() {
+        var _this = this;
+        var params = new URLSearchParams();
+        params.append("uid",this.indexuaccount);
+        this.$axios.post("/yanzhengUserById.action", params).then(function (result) {
+          sessionStorage.setItem("mid", result.data.mid)
+
+          if (result.data.state == '已同意') {
+            _this.$router.push({name: "shanghu3"})
+
+          } else if (result.data.state == '未同意') {
+            _this.$message({
+              message: '警告哦，正在审核中',
+              type: 'warning'
+            });
+          } else {
+            _this.$confirm('你还不是商户, 是否申请成为商户?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              _this.dialogVisible = true;
+            }).catch(() => {
+              _this.$message({
+                type: 'info',
+                message: '已取消'
+              });
+            });
+
+          }
+        }).catch(function (error) {
+          alert(error)
+        });
+      },
+      addtmerchant() {
+        var _this = this;
+        var params = new URLSearchParams();
+        params.append("uid", sessionStorage.getItem('uid'));
+        params.append("sname", this.$refs.child01.merchants.sname);
+        params.append("phone", this.$refs.child01.merchants.phone);
+        params.append("mtype", this.$refs.child01.merchants.mtype);
+        params.append("mddress", this.$refs.child01.merchants.mddress);
+        params.append("provincecode", this.$refs.child01.provincecode);
+        params.append("citycode", this.$refs.child01.citycode);
+        params.append("areacode", this.$refs.child01.areacode);
+        this.$axios.post("/addMerchants2.action", params).then(function (result) {
+          _this.$message({
+            message: result.data.msg,
+            type: 'success'
+          });
+          _this.dialogVisible = false;
+        }).catch(function (error) {
+          _this.$message({
+            message: '添加失败',
+            type: 'success'
+          });
+        });
       }
+    },
+    components: {
+      adduser
     },
     created: function () {
       this.getUserData();
@@ -311,8 +379,10 @@
     }
   }
 </script>
-
 <style>
+  .v-modal{
+    display: none;
+  }
   .showShopping {
     list-style-type: none;
     height: 120px;
