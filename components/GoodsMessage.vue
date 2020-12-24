@@ -7,7 +7,7 @@
           <el-col :span="9">
             <div style="padding-top: 50px;;text-align: center">
               <img :src="'http://localhost:8081/src/assets/'+goodsData.gimgs"
-              style="width: 300px;height: 310px;">
+                   style="width: 300px;height: 310px;">
             </div>
           </el-col>
           <el-col :span="15">
@@ -18,8 +18,12 @@
                   style="color: #8f91ac;margin-left: 8px">{{goodsData.code}}</span></b>
                 <b style="font-size: 14px;font-weight: 500;color: #2b2f4c;margin-left: 30px">库存<span
                   style="color: #8f91ac;margin-left: 8px;">300</span></b>
-                <b style="font-size: 14px;font-weight: 500;color: #2b2f4c;margin-left: 30px;float:right;position: absolute">
-                  评分<el-rate v-model="goodValue" show-score text-color="#ff9900" style="float:right;margin-left: 10px" disabled></el-rate></b>
+                <b
+                  style="font-size: 14px;font-weight: 500;color: #2b2f4c;margin-left: 30px;float:right;position: absolute">
+                  评分
+                  <el-rate v-model="goodValue" show-score text-color="#ff9900" style="float:right;margin-left: 10px"
+                           disabled></el-rate>
+                </b>
               </div>
               <div style="margin: 20px 0px">
                 <el-button size="mini" plain type="info">500克</el-button>
@@ -41,7 +45,8 @@
                 <el-input-number v-model="goodsData.count" :min=1 :max=goodsData.limit size="mini"
                                  style="width: 90px;margin-bottom: 20px"></el-input-number>
                 <i class="el-icon-star-off main_body_foodIcon" style="margin: -5px 0px 0px 15px"></i><br>
-                <el-button style="background: #f55d2c;color: #FFFFFF" @click="joinShopping(goodsData.gid,goodsData.count,goodsData.gname)">
+                <el-button style="background: #f55d2c;color: #FFFFFF"
+                           @click="joinShopping(goodsData.gid,goodsData.count,goodsData.gname)">
                   <i class="el-icon-shopping-cart-full" style="margin-right: 5px"></i>
                   添加到购物车
                 </el-button>
@@ -86,7 +91,8 @@
                 <el-row>
                   <el-col :span="8">
                     <div class="grid-content bg-purple" style="cursor: default">
-                      <el-image :src="'http://localhost:8081/src/assets/'+i.gimgs" style="width: 80px;height: 80px;"></el-image>
+                      <el-image :src="'http://localhost:8081/src/assets/'+i.gimgs"
+                                style="width: 80px;height: 80px;"></el-image>
                     </div>
                   </el-col>
                   <el-col :span="16">
@@ -119,7 +125,7 @@
                         <div>
                           <h2 style="font-weight: 400;color: #726D6D;font-family: 黑体;margin: 0px 0px 10px 0px">发表评论</h2>
                           <textarea style="min-height: 100px;max-height: 200px;min-width:420px;max-width: 420px;padding: 15px 25px;outline: none;
-                          font-size: 18px;border: 1px solid lightgrey;border-radius: 15px;color: grey;font-family: 新宋体"></textarea>
+                          font-size: 18px;border: 1px solid lightgrey;border-radius: 15px;color: grey;font-family: 新宋体;"></textarea>
                         </div>
                       </el-col>
                       <el-col :span="8">
@@ -159,27 +165,27 @@
         maxcount: 10,
         activeName: 'first',
         value: 0,
-        goodValue:3.7,
-        goodsData:[],
-        hotGoodData:[]
+        goodValue: 3.7,
+        goodsData: [],
+        hotGoodData: []
       }
     },
     methods: {
       handleClick(tab, event) {
         console.log(tab, event);
       },
-      getGoodsById(){
+      getGoodsById() {
         var _this = this;
         var params = new URLSearchParams();
-        params.append("gid",this.gid);
-        this.$axios.post("/queryGoodsById.action",params).then(function (result) {
+        params.append("gid", this.gid);
+        this.$axios.post("/queryGoodsById.action", params).then(function (result) {
           console.log(result.data)
           _this.goodsData = result.data;
         }).catch(function (error) {
           alert(error)
         });
       },
-      queryHotGoodData(){
+      queryHotGoodData() {
         var _this = this;
         var params = new URLSearchParams();
         this.$axios.post("/queryHotGoods.action").then(function (result) {
@@ -189,7 +195,7 @@
         });
       },
       joinShopping(gid, count, gname) { //加入购物车
-        if(sessionStorage.getItem('uaccount') == undefined){
+        if (sessionStorage.getItem('uaccount') == undefined) {
           this.$notify({
             title: '提示！',
             message: '请先登录，才可以加入购物车  $_$',
@@ -222,7 +228,7 @@
       mian_bottom
     },
     created() {
-      if(this.gid == undefined){
+      if (this.gid == undefined) {
         this.$router.push({name: 'indexs'});
         return;
       }

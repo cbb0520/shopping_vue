@@ -7,6 +7,7 @@ import Register from "../components/Register.vue";
 import GoodsMessage from "../components/GoodsMessage.vue";
 import Mycenter from "../components/Mycenter.vue";
 import Shanghu3 from "../components/Shanghu3.vue";
+import GoodsPay from "../components/GoodsPay";
 
 Vue.use(VueRouter)
 
@@ -19,5 +20,6 @@ export  default  new VueRouter({
     {path:"/goodsMessage",component:GoodsMessage,name:"goodsMessage", meta: { requiresAuth: true }},
     {path:"/mycenter",component:Mycenter,name:"mycenters", meta: { requiresAuth: true }},
     {path:"/shanghu3",component:Shanghu3,name:"shanghu3", meta: { requiresAuth: true }},
+    {path:"/goodsPay",component:GoodsPay,name:"goodsPay", meta: { requiresAuth: true }},
   ]
 })

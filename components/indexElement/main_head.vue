@@ -1,7 +1,6 @@
 <!--主页头部-->
 <template>
   <div style="position: fixed;width: 100%;z-index: 999;">
-
     <header style="">
       <el-menu class="el-menu-demo" mode="horizontal">
 
@@ -18,7 +17,7 @@
           <el-menu-item index="2-3"><i class="el-icon-location-outline"></i>成都</el-menu-item>
         </el-submenu>
 
-        <el-menu-item index="3" style="cursor: default">
+        <el-menu-item index="3">
           <el-input style="width: 300px" size="medium" placeholder="搜索产品" prefix-icon="el-icon-search"></el-input>
           <el-button size="medium" style="background: #f55d2c;color: white;">
             <a href="#goclassify" style="text-decoration: none">搜索</a>
@@ -35,7 +34,7 @@
           <el-menu-item index="4-3"><i class="el-icon-coin"></i>我的钱包</el-menu-item>
           <el-menu-item index="4-4" @click="myaddress"><i class="el-icon-location-outline"></i>我的地址</el-menu-item>
           <el-menu-item index="4-5"><i class="el-icon-potato-strips"></i>优惠</el-menu-item>
-          <el-menu-item index="4-6"><i class="el-icon-warning-outline"></i>常见问题</el-menu-item>
+          <el-menu-item index="4-6" @click="yanzheng"><i class="el-icon-warning-outline"></i>商户信息</el-menu-item>
           <el-menu-item index="4-7" @click="loginout"><i class="el-icon-lock"></i>退出</el-menu-item>
           <el-menu-item index="4-6"><i class="el-icon-warning-outline"></i>常见问题</el-menu-item>
           <el-menu-item index="4-7" @click="loginout"><i class="el-icon-lock"></i>
@@ -63,7 +62,8 @@
         </el-menu-item>
 
       </el-menu>
-      <el-menu class="el-menu-demo" mode="horizontal" style="border-bottom: solid 1px #e6e6e6;box-shadow: 3px 3px 3px rgba(2,2,2,0.1)">
+      <el-menu class="el-menu-demo" mode="horizontal"
+               style="border-bottom: solid 1px #e6e6e6;box-shadow: 3px 3px 3px rgba(2,2,2,0.1)">
 
         <el-menu-item index="1" class="head_foot_type">
           <i class="el-icon-menu"></i>
@@ -160,14 +160,14 @@
           </div>
           <el-button type="primary">其他信息</el-button>
         </el-tooltip>
-        <el-button style="background: #f69733;color: #FFFFFF;float: right">进行结算</el-button>
+        <el-button style="background: #f69733;color: #FFFFFF;float: right" @click="goGoodsPay">进行结算</el-button>
       </div>
     </el-drawer>
   </div>
 </template>
 
 <script>
-  import adduser from "../shanghuElement/shanghuweihu/registermerchant"
+  import Adduser from "../shanghuElement/shanghuweihu/registermerchant"
 
   export default {
     data() {
@@ -188,7 +188,7 @@
       loginout(){
         sessionStorage.removeItem("uaccount");
         sessionStorage.removeItem("uimg");
-        this.$router.push({name:"logins"})
+        this.$router.push({name: "logins"})
       },
       myaddress(){
         this.$router.push({name:"mycenters"})
@@ -326,14 +326,19 @@
         params.append("uid",this.indexuaccount);
         this.$axios.post("/yanzhengUserById.action", params).then(function (result) {
           sessionStorage.setItem("mid", result.data.mid)
+          console.log(result.data.state)
           if (result.data.state == '已同意') {
             _this.$router.push({name: "shanghu3"})
+
           } else if (result.data.state == '未同意') {
             _this.$message({
               message: '警告哦，正在审核中',
               type: 'warning'
             });
-          } else {
+          }else if(result.data.state == '已拒绝'){
+            _this.$message.error('警告哦，已拒绝你的商户申请');
+          }
+          else {
             _this.$confirm('你还不是商户, 是否申请成为商户?', '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消',
@@ -374,8 +379,14 @@
             type: 'success'
           });
         });
-
+      },
+      //跳到支付页面
+      goGoodsPay(){
+        this.$router.push({name: "goodsPay"})
       }
+    },
+    components: {
+      adduser:Adduser
     },
     created: function () {
       this.getUserData();
@@ -387,6 +398,28 @@
 </script>
 
 <style>
+  .v-modal{
+    display: none;
+  }
+  .showShopping {
+    list-style-type: none;
+    height: 120px;
+    border-bottom: 1px solid #efefef;
+    padding: 15px;
+    background: #FFFFFF;
+  }
+
+  .movieShopping {
+    float: right;
+    font-weight: bold;
+    font-size: 18px
+  }
+
+  .movieShopping:hover {
+    cursor: pointer;
+    color: #f55d2c;
+  }
+
   .homeWrap {
     position: absolute;
     top: 0;
