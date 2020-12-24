@@ -160,7 +160,7 @@
           </div>
           <el-button type="primary">其他信息</el-button>
         </el-tooltip>
-        <el-button style="background: #f69733;color: #FFFFFF;float: right">进行结算</el-button>
+        <el-button style="background: #f69733;color: #FFFFFF;float: right" @click="goGoodsPay">进行结算</el-button>
       </div>
     </el-drawer>
   </div>
@@ -190,7 +190,6 @@
       },
       myaddress(){
         this.$router.push({name:"mycenters"})
-        this.$router.push({name: "logins"})
       },
       closeShoping() {
         this.drawer = false;
@@ -371,6 +370,10 @@
             type: 'success'
           });
         });
+      },
+      //跳到支付页面
+      goGoodsPay(){
+        this.$router.push({name: "goodsPay"})
       }
     },
     created: function () {
