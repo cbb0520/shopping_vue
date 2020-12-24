@@ -13,7 +13,9 @@ Vue.prototype.$axios = Axios
 //将路由的配置js引入进来
 import Router from   '../router/routerconfig.js'
 
+
 Vue.use(ElementUI)
+
 
 new Vue({
   el: '#app',

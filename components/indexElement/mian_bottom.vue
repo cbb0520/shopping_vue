@@ -41,7 +41,7 @@
             <p>订阅即可从我们的</p>
             <p>公司获得10％的折扣。</p>
             <div style="margin-top: 15px;">
-              <el-input placeholder="输入您的电子邮箱" v-model="input2">
+              <el-input placeholder="输入您的电子邮箱">
                 <template slot="append">订阅</template>
               </el-input>
             </div>

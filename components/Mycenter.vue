@@ -45,7 +45,7 @@
             {id:1,icond:'el-icon-menu',lables:'概述',urls:'mycenteraddress'},
             {id:2,icond:'el-icon-location',lables:'我的地址',urls:'mycenteraddress'},
             {id:3,icond:'el-icon-s-claim',lables:'我的订单',urls:'mycenteraddress'},
-            {id:4,icond:'el-icon-user-solid',lables:'我的信息',urls:'mycentermessage'}
+            {id:4,icond:'el-icon-user-solid',lables:'我的信息',urls:'mycentermessage'},
           ],
           title:'概述',
           center:'mycenteraddress'

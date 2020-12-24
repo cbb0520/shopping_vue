@@ -13,22 +13,22 @@
     </el-row>
 
     <el-row :gutter="30" style="margin-top: 50px">
-      <el-col :span="6" v-for="i in 12">
+      <el-col :span="6" v-for="goods in goodsData">
         <div class="grid-content bg-purple" style="height: 350px;background-color: #FFFFFF;border-radius: 10px;
         cursor: default;margin-bottom: 40px;border: 1px solid gainsboro;text-align: center;">
           <i class="el-icon-star-off main_body_foodIcon"></i>
-          <el-image src="images/baicai.jpg" class="main_body_commodityImg"></el-image>
+          <el-image :src="'http://localhost:8081/src/assets/'+goods.gimgs" class="main_body_commodityImg" @click="goodsmsg(goods.gid)"></el-image>
           <!--<el-image class="main_body_commodityImg" src="images/baicai.jpg"></el-image>-->
-          <h3 style="margin: 5px">白菜</h3>
-          <p style="font-size: 15px;margin: 5px;color: gray;">蔬菜类</p>
-          <h3 style="font-family: 黑体;margin: 11px;color: #f69733;font-weight: bold">$ 4.6</h3>
-          <el-input-number size="mini" v-model="num" :min=0 :max=99 style="width: 90px;"></el-input-number>
-          <i class="el-icon-shopping-cart-2 main_body_gwcBtn"></i>
+          <h3 style="margin: 5px">{{goods.gname}}</h3>
+          <p style="font-size: 15px;margin: 5px;color: gray;">{{goods.classify.fname}}</p>
+          <h3 style="font-family: 黑体;margin: 11px;color: #f69733;font-weight: bold">$ {{goods.price}}</h3>
+          <el-input-number size="mini" v-model="goods.count" :min=1 :max=goods.limit style="width: 90px;"></el-input-number>
+          <i class="el-icon-shopping-cart-2 main_body_gwcBtn" @click="joinShopping(goods.gid,goods.count,goods.gname)"></i>
         </div>
       </el-col>
     </el-row>
     <div style="width: 100%;text-align: center">
-      <el-pagination layout="prev, pager, next" :total="1000" background></el-pagination>
+      <el-pagination @current-change="pagechange" layout="prev, pager, next" :total="total" :page-size="rows" background></el-pagination>
     </div>
 
   </div>
@@ -39,17 +39,61 @@
     data() {
       return {
         data: [
-          {img: "images/lingshi.svg", msg: "零食类"},
+          {img: "images/shuiguo_icon.svg", msg: "水果类"},
           {img: "images/mianlei.svg", msg: "面类"},
           {img: "images/roulei.svg", msg: "肉类"},
           {img: "images/shucai.svg", msg: "蔬菜类"},
           {img: "images/yinliao.svg", msg: "饮料类"},
-          {img: "images/zahuo-2.svg", msg: "杂货贺主食"}
+          {img: "images/zahuo-2.svg", msg: "杂货"}
         ],
-        num: 1
+        num: 1,
+        goodsData:[],
+        total:1,
+        page:1,
+        rows:12
       };
     },
-    methods: {}
+    methods: {
+      getGoodsData(){
+        var _this = this;
+        var params = new URLSearchParams();
+        params.append("rows","12");
+        params.append("page",this.page);
+        this.$axios.post("/queryAllGoods.action",params).then(function (result) {
+          _this.goodsData = result.data.rows;
+          _this.total = result.data.total;
+        }).catch(function (error) {
+          alert(error)
+        });
+      },
+      pagechange(pageindex){
+        this.page = pageindex;
+        this.getGoodsData();
+      },
+      joinShopping(gid,count,gname){ //加入购物车
+        var _this = this;
+        var params = new URLSearchParams();
+        params.append("gid",gid);
+        params.append("gname",gname);
+        params.append("count",count);
+        params.append("uaccount",sessionStorage.getItem('uaccount'));
+        this.$axios.post("/joinShopping.action",params).then(function (result) {
+          _this.$notify({
+            title: result.data.title,
+            message: result.data.msg,
+            type: result.data.type
+          });
+        }).catch(function (error) {
+          alert(error)
+        });
+      },
+      goodsmsg(gid){
+        this.$router.push({name: 'goodsMessage',params:{gid:gid}})
+      }
+    },
+    created() {
+      this.getGoodsData();
+    }
   }
 </script>
 
