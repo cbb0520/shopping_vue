@@ -23,7 +23,7 @@
 
         <el-submenu index="4" style="float: right">
           <template slot="title">
-            <el-avatar size="small" src="images/img-5.jpg"></el-avatar>
+            <el-avatar size="small" :src="indexuimg"></el-avatar>
             <span>{{indexuaccount}}</span>
           </template>
           <el-menu-item index="4-1"><i class="el-icon-chat-line-square"></i>我的收藏</el-menu-item>
@@ -97,19 +97,37 @@
   export default {
     data() {
       return {
-        indexuaccount:sessionStorage.getItem('uaccount')
+        indexuaccount:sessionStorage.getItem('uaccount'),
+        userData:[],
+        indexuimg:'',
       };
     },
     methods: {
       loginout(){
         sessionStorage.removeItem("uaccount");
+        sessionStorage.removeItem("uimg");
         this.$router.push({name:"logins"})
       },
       myaddress(){
         this.$router.push({name:"mycenters"})
+      },
+      getUserData(){
+        var _this=this;
+        var params=new URLSearchParams();
+        params.append("uaccount",sessionStorage.getItem('uaccount'));
+        this.$axios.post("queryByuaccount.action",params)
+          .then(function (result) {
+            console.log(result.data.uimg);
+            _this.userData=result.data;
+            _this.indexuimg="http://localhost:8081/src/assets/"+ _this.userData.uimg;
+          }).catch(function (error) {
+          alert(error);
+        });
+
       }
     },
     created:function () {
+      this.getUserData();
     }
   }
 </script>

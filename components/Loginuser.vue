@@ -63,13 +63,17 @@
             type: 'warning'
           });
         }else {
-          this.$axios.get("loginUser.action", {params: {uaccount: _this.uaccount, upassword: _this.upassword}})
+          var params=new URLSearchParams();
+          params.append("uaccount",_this.uaccount);
+          params.append("upassword",_this.upassword);
+          this.$axios.post("loginUser.action",params)
             .then(function (result) {
               if (result.data.code == "0") {
                 //登录成功  跳转 首页
                 alert(result.data.msg);
                 //将登录成功的用户名存入store中
-                sessionStorage.setItem("uaccount", result.data.uaccount)
+                sessionStorage.setItem("uaccount", result.data.uaccount);
+                sessionStorage.setItem("uimg", result.data.uimg);
                 _this.$router.push("/index");
               } else {
                 //弹出消息  停留在该页面

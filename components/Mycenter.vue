@@ -1,6 +1,6 @@
 <template>
     <div id="Mycenter" class="mycenterdiv1">
-        <mainHead></mainHead>
+        <mainHead ref="mainHead"></mainHead>
       <div  class="mycenterdiv2">
         <div style="padding-left: 100px">
       <el-breadcrumb separator="/">
