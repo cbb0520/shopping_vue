@@ -153,7 +153,7 @@
 </template>
 
 <script>
-  import adduser from "../shanghuElement/shanghuweihu/registermerchant"
+  import Adduser from "../shanghuElement/shanghuweihu/registermerchant"
 
   export default {
     data() {
@@ -324,6 +324,7 @@
         params.append("provincecode", this.$refs.child01.provincecode);
         params.append("citycode", this.$refs.child01.citycode);
         params.append("areacode", this.$refs.child01.areacode);
+        console.log(params)
         this.$axios.post("/addMerchants2.action", params).then(function (result) {
           _this.$message({
             message: result.data.msg,
@@ -339,7 +340,7 @@
       }
     },
     components: {
-      adduser
+      adduser:Adduser
     },
     created: function () {
     }

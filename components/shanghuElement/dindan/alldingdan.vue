@@ -13,12 +13,24 @@
       <el-table-column prop="merchants.mname" label="商户名"></el-table-column>
       <el-table-column prop="price" label="价格"></el-table-column>
       <el-table-column prop="buytime" label="购买时间"></el-table-column>
+      <el-table-column prop="fulfiltime" label="付款时间">
+        <template scope="scope">
+          <p v-if="scope.row.fulfiltime==null">交易进行中</p>
+          <p v-if="scope.row.fulfiltime!=null">{{scope.row.fulfiltime}}</p>
+        </template>
+      </el-table-column>
       <el-table-column prop="mstate" label="状态">
         <template scope="scope">
           <p v-if="scope.row.mstate=='0'">待发货</p>
           <p v-if="scope.row.mstate=='1'">待收货</p>
           <p v-if="scope.row.mstate=='2'">待提货</p>
           <p v-if="scope.row.mstate=='3'">已完成</p>
+        </template>
+      </el-table-column>
+      <el-table-column prop="text" label="备注">
+        <template scope="scope">
+          <p v-if="scope.row.text==null">无</p>
+          <p v-if="scope.row.text!=null">{{scope.row.text}}</p>
         </template>
       </el-table-column>
       <el-table-column label="操作">
@@ -56,6 +68,7 @@
         var params = new URLSearchParams();
         params.append("page", this.page);
         params.append("user.uname", this.name);
+        params.append("uid", sessionStorage.getItem('uid'));
         _this.$axios.post("/queryCountDelivers.action", params).then(function (result) {
           _this.tableData = result.data.rows;
           _this.total = result.data.total;
