@@ -323,7 +323,7 @@
         params.append("uid",this.indexuaccount);
         this.$axios.post("/yanzhengUserById.action", params).then(function (result) {
           sessionStorage.setItem("mid", result.data.mid)
-
+          console.log(result.data.state)
           if (result.data.state == '已同意') {
             _this.$router.push({name: "shanghu3"})
 
@@ -332,7 +332,10 @@
               message: '警告哦，正在审核中',
               type: 'warning'
             });
-          } else {
+          }else if(result.data.state == '已拒绝'){
+            _this.$message.error('警告哦，已拒绝你的商户申请');
+          }
+          else {
             _this.$confirm('你还不是商户, 是否申请成为商户?', '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消',
