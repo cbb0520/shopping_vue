@@ -6,7 +6,8 @@
       <el-menu class="el-menu-demo" mode="horizontal">
 
         <el-menu-item index="1">
-          <el-image style="height: 45px;width: 135px" src="images/logo.svg" fit="scale-down"></el-image>
+          <el-image style="height: 45px;width: 135px" src="images/logo.svg" fit="scale-down"
+                    @click="goIndex"></el-image>
         </el-menu-item>
 
         <el-submenu index="2">
@@ -17,13 +18,16 @@
           <el-menu-item index="2-3"><i class="el-icon-location-outline"></i>成都</el-menu-item>
         </el-submenu>
 
-        <el-menu-item index="3">
+        <el-menu-item index="3" style="cursor: default">
           <el-input style="width: 300px" size="medium" placeholder="搜索产品" prefix-icon="el-icon-search"></el-input>
+          <el-button size="medium" style="background: #f55d2c;color: white;">
+            <a href="#goclassify" style="text-decoration: none">搜索</a>
+          </el-button>
         </el-menu-item>
 
         <el-submenu index="4" style="float: right">
           <template slot="title">
-            <el-avatar size="small" src="images/img-5.jpg"></el-avatar>
+            <el-image size="small" :src="'http://localhost:8081/src/assets/'+userData.uimg" style="width: 30px;height: 30px;"></el-image>
             <span>{{indexuaccount}}</span>
           </template>
           <el-menu-item index="4-1"><i class="el-icon-chat-line-square"></i>我的收藏</el-menu-item>
@@ -32,7 +36,10 @@
           <el-menu-item index="4-4" @click="myaddress"><i class="el-icon-location-outline"></i>我的地址</el-menu-item>
           <el-menu-item index="4-5"><i class="el-icon-potato-strips"></i>优惠</el-menu-item>
           <el-menu-item index="4-6"><i class="el-icon-warning-outline"></i>常见问题</el-menu-item>
-          <el-menu-item index="4-7" @click="loginout"><i class="el-icon-lock"></i>退出</el-menu-item>
+          <el-menu-item index="4-7" @click="loginout"><i class="el-icon-lock"></i>
+            <span v-if="this.indexuaccount == undefined">登录</span>
+            <span v-if="this.indexuaccount != undefined">退出</span>
+          </el-menu-item>
         </el-submenu>
 
         <el-menu-item index="5" style="float: right">
@@ -79,7 +86,7 @@
         </el-menu-item>
 
         <el-menu-item index="6">
-          <span @click="goodsmsg">联系我们</span>
+          <span>联系我们</span>
         </el-menu-item>
 
         <el-menu-item index="7" class="shopping" @click="openShoping" style="float: right;background-color: #f55d2c">
@@ -109,12 +116,13 @@
               </el-col>
               <el-col :span="8">
                 <div style="border: 1px solid #f7f7f7">
-                  <el-image :src="'http://localhost:8081/src/assets/'+goods.gimgs" @click="goodsmsg"></el-image>
+                  <el-image :src="'http://localhost:8081/src/assets/'+goods.gimgs"
+                            @click="goodsmsg(goods.gid)"></el-image>
                 </div>
               </el-col>
               <el-col :span="14">
                 <div>
-                  <b @click="goodsmsg">{{goods.gname}}</b>
+                  <b @click="goodsmsg(goods.gid)">{{goods.gname}}</b>
                   <i class="el-icon-close movieShopping" @click="delShoppingCar(goods.gid)"></i>
                 </div>
                 <div style="margin-top: 60px;">
@@ -134,7 +142,11 @@
         <b>{{sumPrice}}</b></span>
       </h3>
       <div style="padding: 20px 33px;background: #f7f7f7">
-        <el-tooltip class="item" effect="dark" content="我的收获地址" placement="top-start">
+        <el-tooltip placement="top-start">
+          <div slot="content">
+            <p>我的收货地址：<span style="color: #f69733">内蒙古/呼伦贝尔市/鄂温克族自治旗/氨酸股路氨酸股路20号</span></p>
+            <p>优惠卷使用：<span style="color: #f69733">暂无优惠卷</span></p>
+          </div>
           <el-button type="primary">其他信息</el-button>
         </el-tooltip>
         <el-button style="background: #f69733;color: #FFFFFF;float: right">进行结算</el-button>
@@ -152,24 +164,33 @@
         num: 1,
         indexuaccount: sessionStorage.getItem('uaccount'),
         shoppingCarData: [],
-        sumPrice: 0
+        sumPrice: 0,
+        userData:{}
       };
     },
     methods: {
       loginout() {
         sessionStorage.removeItem("uaccount");
-        this.$router.push({name:"logins"})
-      },
-      myaddress(){
-        this.$router.push({name:"mycenters"})
         this.$router.push({name: "logins"})
+      },
+      myaddress() {
+        this.$router.push({name: "mycenters"})
       },
       closeShoping() {
         this.drawer = false;
       },
       openShoping() {
-        this.getShoppingCarData();
-        this.drawer = true;
+        if (this.indexuaccount != undefined) {
+          this.getShoppingCarData();
+          this.drawer = true;
+          return;
+        }
+
+        this.$notify({
+          title: '提示！',
+          message: '请先登录，再来查看购物车  `_`',
+          position: 'top-right'
+        });
       },
       load() {
         if (this.count == 10) {
@@ -264,11 +285,29 @@
           });
         })
       },
-      goodsmsg(){
-        this.$router.push({name: 'goodsMessage'})
+      goodsmsg(gid) {
+        this.$router.push({name: 'goodsMessage', params: {gid: gid}})
+      },
+      goIndex() {
+        this.$router.push({name: 'indexs'});
+      },
+      getUserData(){
+        var _this = this;
+        var params = new URLSearchParams();
+        params.append("uaccount", this.indexuaccount);
+        this.$axios.post("/queryByuaccount.action", params).then(function (result) {
+          console.log(result.data);
+          _this.userData = result.data
+        }).catch(function (error) {
+          alert(error)
+        });
       }
     },
     created: function () {
+      this.getUserData();
+      if (this.indexuaccount != undefined) {
+        this.getShoppingCarData();
+      }
     }
   }
 </script>

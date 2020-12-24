@@ -3,8 +3,8 @@
     <el-row>
       <el-col span="4" push="10">
         <div class="demo-image">
-                   <el-image style="width: 150px; height: 52px"
-                     :src="url">
+                   <el-image style="width: 150px; height: 52px;cursor: pointer"
+                     :src="url" @click="goIndex">
                    </el-image>
                </div>
       </el-col>
@@ -81,6 +81,9 @@
           });
         }
 
+      },
+      goIndex() {
+        this.$router.push({name: 'indexs'});
       },
       loginzcbtn(){
         this.$router.push("/register");
