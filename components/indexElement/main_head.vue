@@ -196,6 +196,14 @@
         this.drawer = false;
       },
       openShoping() {
+        if (this.indexuaccount == undefined) {
+          this.$notify({
+            title: '提示！',
+            message: '请先登录，才可以加入购物车  $_$',
+            position: 'top-right'
+          });
+          return;
+        }
         this.getShoppingCarData();
         this.drawer = true;
       },
@@ -315,10 +323,8 @@
         params.append("uid",this.indexuaccount);
         this.$axios.post("/yanzhengUserById.action", params).then(function (result) {
           sessionStorage.setItem("mid", result.data.mid)
-
           if (result.data.state == '已同意') {
             _this.$router.push({name: "shanghu3"})
-
           } else if (result.data.state == '未同意') {
             _this.$message({
               message: '警告哦，正在审核中',
@@ -337,7 +343,6 @@
                 message: '已取消'
               });
             });
-
           }
         }).catch(function (error) {
           alert(error)
@@ -368,9 +373,6 @@
         });
       }
     },
-    components: {
-      adduser
-    },
     created: function () {
       this.getUserData();
       if (this.indexuaccount != undefined) {
@@ -379,10 +381,8 @@
     }
   }
 </script>
+
 <style>
-  .v-modal{
-    display: none;
-  }
   .showShopping {
     list-style-type: none;
     height: 120px;

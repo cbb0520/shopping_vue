@@ -6,8 +6,8 @@
         <el-row :gutter="20">
           <el-col :span="9">
             <div style="padding-top: 50px;;text-align: center">
-              <el-image :src="'http://localhost:8081/src/assets/'+goodsData.gimgs"
-              style="width: 300px;height: 310px;"></el-image>
+              <img :src="'http://localhost:8081/src/assets/'+goodsData.gimgs"
+              style="width: 300px;height: 310px;">
             </div>
           </el-col>
           <el-col :span="15">
@@ -173,6 +173,7 @@
         var params = new URLSearchParams();
         params.append("gid",this.gid);
         this.$axios.post("/queryGoodsById.action",params).then(function (result) {
+          console.log(result.data)
           _this.goodsData = result.data;
         }).catch(function (error) {
           alert(error)
@@ -186,18 +187,6 @@
         }).catch(function (error) {
           alert(error)
         });
-      },
-      heightToTop(ele){
-        //ele为指定跳转到该位置的DOM节点
-        let bridge = ele;
-        let root = document.body;
-        let height = 0;
-        do{
-          height += bridge.offsetTop;
-          bridge = bridge.offsetParent;
-        }while(bridge !== root)
-
-        return height;
       },
       joinShopping(gid, count, gname) { //加入购物车
         if(sessionStorage.getItem('uaccount') == undefined){
