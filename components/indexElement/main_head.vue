@@ -6,7 +6,8 @@
       <el-menu class="el-menu-demo" mode="horizontal">
 
         <el-menu-item index="1">
-          <el-image style="height: 45px;width: 135px" src="images/logo.svg" fit="scale-down"></el-image>
+          <el-image style="height: 45px;width: 135px" src="images/logo.svg" fit="scale-down"
+                    @click="goIndex"></el-image>
         </el-menu-item>
 
         <el-submenu index="2">
@@ -17,8 +18,11 @@
           <el-menu-item index="2-3"><i class="el-icon-location-outline"></i>成都</el-menu-item>
         </el-submenu>
 
-        <el-menu-item index="3">
+        <el-menu-item index="3" style="cursor: default">
           <el-input style="width: 300px" size="medium" placeholder="搜索产品" prefix-icon="el-icon-search"></el-input>
+          <el-button size="medium" style="background: #f55d2c;color: white;">
+            <a href="#goclassify" style="text-decoration: none">搜索</a>
+          </el-button>
         </el-menu-item>
 
         <el-submenu index="4" style="float: right">
@@ -33,6 +37,11 @@
           <el-menu-item index="4-5"><i class="el-icon-potato-strips"></i>优惠</el-menu-item>
           <el-menu-item index="4-6"><i class="el-icon-warning-outline"></i>常见问题</el-menu-item>
           <el-menu-item index="4-7" @click="loginout"><i class="el-icon-lock"></i>退出</el-menu-item>
+          <el-menu-item index="4-6"><i class="el-icon-warning-outline"></i>常见问题</el-menu-item>
+          <el-menu-item index="4-7" @click="loginout"><i class="el-icon-lock"></i>
+            <span v-if="this.indexuaccount == undefined">登录</span>
+            <span v-if="this.indexuaccount != undefined">退出</span>
+          </el-menu-item>
         </el-submenu>
 
         <el-menu-item index="5" style="float: right">
@@ -81,24 +90,97 @@
           <span>联系我们</span>
         </el-menu-item>
 
-        <el-menu-item index="7" class="shopping" style="float: right;background-color: #f55d2c">
+        <el-menu-item index="7" class="shopping" @click="openShoping" style="float: right;background-color: #f55d2c">
           <i class="el-icon-shopping-cart-2" style="color: #FFFFFF;margin-right: 0px;"></i>
           <span style="color: #FFFFFF">购物车</span>
-          <span style="margin-right: 20px;color: #FFFFFF">3</span>
+          <span style="margin-right: 20px;color: #FFFFFF">{{shoppingCarData.length}}</span>
           <i style="top:54%;color: #FFFFFF;font-size: 15px;" class="el-submenu__icon-arrow el-icon-arrow-down"></i>
         </el-menu-item>
       </el-menu>
     </header>
 
+    <el-dialog title="注册商户" :visible.sync="dialogVisible" width="50%">
+      <!-- 内容的主体区域 -->
+      <adduser ref="child01"></adduser>
+      <!-- 底部区域 -->
+      <span slot="footer" class="dialog-footer">
+                    <el-button @click="dialogVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="addtmerchant">确 定</el-button>
+                </span>
+    </el-dialog>
+
+    <!--购物车查看-->
+    <el-drawer title="我是标题" :visible.sync="drawer" :modal="false" direction="ltr" :with-header="false">
+      <h2 class="shoppingTitle">
+        <el-checkbox name="type" style="position: absolute;margin-left: -6px"
+                     @change="selectAllShopping($event)"></el-checkbox>
+        <span style="color: #f69733;padding-left: 28px;">我的购物车({{shoppingCarData.length}}件)</span>
+        <i class="el-icon-close shopingIcon" @click="closeShoping"></i>
+      </h2>
+      <template>
+        <ul class="infinite-list shoppingUl" v-infinite-scroll="load">
+          <li v-for="goods in shoppingCarData" class="infinite-list-item showShopping">
+            <el-row :gutter="20">
+              <el-col :span="2">
+                <el-checkbox name="type" style="line-height: 120px" v-model="goods.select"
+                             @change="selectGoods($event,goods.gid)"></el-checkbox>
+              </el-col>
+              <el-col :span="8">
+                <div style="border: 1px solid #f7f7f7">
+                  <el-image :src="'http://localhost:8081/src/assets/'+goods.gimgs"
+                            @click="goodsmsg(goods.gid)"></el-image>
+                </div>
+              </el-col>
+              <el-col :span="14">
+                <div>
+                  <b @click="goodsmsg(goods.gid)">{{goods.gname}}</b>
+                  <i class="el-icon-close movieShopping" @click="delShoppingCar(goods.gid)"></i>
+                </div>
+                <div style="margin-top: 60px;">
+                  <el-input-number size="mini" v-model="goods.count" @change="selectCountGoods(goods.gid,goods.count)"
+                                   :min=1 :max=99 style="width: 95px;"></el-input-number>
+                  <span style="color: #f69733;float:right;">￥
+                  <b>{{goods.count * goods.price}}</b></span>
+                </div>
+              </el-col>
+            </el-row>
+          </li>
+        </ul>
+      </template>
+      <h3 style="line-height: 60px;background: #f7f7f7;margin: 0;padding: 10px 33px;border-bottom: 1px solid lightgrey">
+        小计：
+        <span style="color: #f69733;float:right;">￥
+        <b>{{sumPrice}}</b></span>
+      </h3>
+      <div style="padding: 20px 33px;background: #f7f7f7">
+        <el-tooltip placement="top-start">
+          <div slot="content">
+            <p>我的收货地址：<span style="color: #f69733">内蒙古/呼伦贝尔市/鄂温克族自治旗/氨酸股路氨酸股路20号</span></p>
+            <p>优惠卷使用：<span style="color: #f69733">暂无优惠卷</span></p>
+          </div>
+          <el-button type="primary">其他信息</el-button>
+        </el-tooltip>
+        <el-button style="background: #f69733;color: #FFFFFF;float: right">进行结算</el-button>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
 <script>
+  import adduser from "../shanghuElement/shanghuweihu/registermerchant"
+
   export default {
     data() {
       return {
-        indexuaccount:sessionStorage.getItem('uaccount'),
-        userData:[],
+        drawer: false,
+        count: 0,
+        num: 1,
+        indexuaccount: sessionStorage.getItem('uaccount'),
+        shoppingCarData: [],
+        sumPrice: 0,
+        dialogVisible: false,
+        indexuid:sessionStorage.getItem('uid'),
+        userData:{},
         indexuimg:'',
       };
     },
@@ -111,23 +193,193 @@
       myaddress(){
         this.$router.push({name:"mycenters"})
       },
-      getUserData(){
-        var _this=this;
-        var params=new URLSearchParams();
-        params.append("uaccount",sessionStorage.getItem('uaccount'));
-        this.$axios.post("queryByuaccount.action",params)
-          .then(function (result) {
-            console.log(result.data.uimg);
-            _this.userData=result.data;
-            _this.indexuimg="http://localhost:8081/src/assets/"+ _this.userData.uimg;
+      closeShoping() {
+        this.drawer = false;
+      },
+      openShoping() {
+        if (this.indexuaccount == undefined) {
+          this.$notify({
+            title: '提示！',
+            message: '请先登录，才可以加入购物车  $_$',
+            position: 'top-right'
+          });
+          return;
+        }
+        this.getShoppingCarData();
+        this.drawer = true;
+      },
+      load() {
+        if (this.count == 10) {
+          return
+        }
+        this.count += 1
+      },
+      handleChange(value) {
+        console.log(value);
+      },
+      getShoppingCarData() {
+        var _this = this;
+        var params = new URLSearchParams();
+        params.append("uaccount", this.indexuaccount);
+        this.$axios.post("/queryGoodsByUid.action", params).then(function (result) {
+          _this.shoppingCarData = result.data;
+          _this.eachShoppingCarData();
+        }).catch(function (error) {
+          alert(error)
+        });
+      },
+      //计算购物车选中的商品总价
+      eachShoppingCarData() {
+        let sumPrice = 0;
+        this.shoppingCarData.forEach((item, index, ary) => {
+          if (item.select == true) {
+            sumPrice += item.price * item.count;
+          }
+        })
+        this.sumPrice = sumPrice;
+      },
+      //修改购物车复选框计算商品总价
+      selectGoods(e, gid) {
+        var _this = this;
+        var params = new URLSearchParams();
+        params.append("gid", gid);
+        params.append("select", e);
+        params.append("uaccount", this.indexuaccount);
+        this.$axios.post("/changeSelect.action", params).then(function (result) {
+          _this.eachShoppingCarData();
+        }).catch(function (error) {
+          alert(error)
+        });
+      },
+      //全选购物车
+      selectAllShopping(e) {
+        //快速勾选
+        this.shoppingCarData.forEach((item, index, ary) => {
+          item.select = e;
+        })
+
+        var _this = this;
+        var params = new URLSearchParams();
+        params.append("select", e);
+        params.append("uaccount", this.indexuaccount);
+        this.$axios.post("/selectAllShopping.action", params).then(function (result) {
+          _this.getShoppingCarData();
+          _this.eachShoppingCarData();
+        }).catch(function (error) {
+          alert(error)
+        });
+      },
+      //修改购物车数量并计算总价
+      selectCountGoods(gid, count) {
+        var _this = this;
+        var params = new URLSearchParams();
+        params.append("gid", gid);
+        params.append("count", count);
+        params.append("uaccount", this.indexuaccount);
+        this.$axios.post("/selectCountGoods.action", params).then(function (result) {
+          _this.eachShoppingCarData();
+        }).catch(function (error) {
+          alert(error)
+        });
+      },
+      //删除购物车里的某项商品
+      delShoppingCar(gid) {
+        this.$confirm('前确认是否删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          var _this = this;
+          var params = new URLSearchParams();
+          params.append("gid", gid);
+          params.append("uaccount", this.indexuaccount);
+          this.$axios.post("/delShoppingCar.action", params).then(function (result) {
+            _this.getShoppingCarData();
+            _this.eachShoppingCarData();
           }).catch(function (error) {
-          alert(error);
+            alert(error)
+          });
+        })
+      },
+      goodsmsg(gid) {
+        this.$router.push({name: 'goodsMessage', params: {gid: gid}})
+      },
+      goIndex() {
+        this.$router.push({name: 'indexs'});
+      },
+      getUserData(){
+        var _this = this;
+        var params = new URLSearchParams();
+        params.append("uaccount", this.indexuaccount);
+        this.$axios.post("/queryByuaccount.action", params).then(function (result) {
+          console.log(result.data);
+          _this.userData = result.data
+        }).catch(function (error) {
+          alert(error)
+        });
+      },
+      yanzheng() {
+        var _this = this;
+        var params = new URLSearchParams();
+        params.append("uid",this.indexuaccount);
+        this.$axios.post("/yanzhengUserById.action", params).then(function (result) {
+          sessionStorage.setItem("mid", result.data.mid)
+          if (result.data.state == '已同意') {
+            _this.$router.push({name: "shanghu3"})
+          } else if (result.data.state == '未同意') {
+            _this.$message({
+              message: '警告哦，正在审核中',
+              type: 'warning'
+            });
+          } else {
+            _this.$confirm('你还不是商户, 是否申请成为商户?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              _this.dialogVisible = true;
+            }).catch(() => {
+              _this.$message({
+                type: 'info',
+                message: '已取消'
+              });
+            });
+          }
+        }).catch(function (error) {
+          alert(error)
+        });
+      },
+      addtmerchant() {
+        var _this = this;
+        var params = new URLSearchParams();
+        params.append("uid", sessionStorage.getItem('uid'));
+        params.append("sname", this.$refs.child01.merchants.sname);
+        params.append("phone", this.$refs.child01.merchants.phone);
+        params.append("mtype", this.$refs.child01.merchants.mtype);
+        params.append("mddress", this.$refs.child01.merchants.mddress);
+        params.append("provincecode", this.$refs.child01.provincecode);
+        params.append("citycode", this.$refs.child01.citycode);
+        params.append("areacode", this.$refs.child01.areacode);
+        this.$axios.post("/addMerchants2.action", params).then(function (result) {
+          _this.$message({
+            message: result.data.msg,
+            type: 'success'
+          });
+          _this.dialogVisible = false;
+        }).catch(function (error) {
+          _this.$message({
+            message: '添加失败',
+            type: 'success'
+          });
         });
 
       }
     },
-    created:function () {
+    created: function () {
       this.getUserData();
+      if (this.indexuaccount != undefined) {
+        this.getShoppingCarData();
+      }
     }
   }
 </script>
@@ -175,5 +427,35 @@
     border-right: 1px solid lightgrey;
     width: 152px;
     text-align: center
+  }
+
+  .shoppingTitle {
+    font-size: 17px;
+    font-weight: 500;
+    background: #2b2f4c;
+    color: white;
+    padding-left: 20px;
+    margin: 0;
+    line-height: 50px
+  }
+
+  .shopingIcon {
+    color: white;
+    margin-left: 170px;
+    font-size: 22px;
+    font-weight: bold;
+  }
+
+  .shopingIcon:hover {
+    color: #f69733;
+    cursor: pointer;
+  }
+
+  .shoppingUl {
+    overflow: auto;
+    margin: 0;
+    padding: 0;
+    height: 450px;
+    background: #f7f7f7
   }
 </style>

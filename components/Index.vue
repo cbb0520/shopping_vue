@@ -1,6 +1,6 @@
 <template>
   <div id="indexs" class="homeWrap">
-    <mainHead></mainHead>
+    <mainHead ref="mainHead"></mainHead>
     <carousel></carousel>
     <div style="padding: 20px 80px;background-color: #f7f7f7!important">
       <recommend></recommend>
@@ -30,6 +30,9 @@
       recommend: Recommend,
       mainFoot: MainFoot,
       mainBottom: MainBottom
+    },created() {
+      //页面加载显示页面顶部
+      window.scrollTo(0, document.body.scrollHeight)
     }
   }
 </script>

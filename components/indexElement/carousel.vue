@@ -1,6 +1,6 @@
 <!--显示轮播条组件-->
 <template>
-  <div>
+  <div style="background: #FFFFFF">
 
     <el-carousel :interval="4000" type="card" height="320px" width="300px" style="padding-top: 140px;padding-bottom: 30px">
       <el-carousel-item v-for="img in imgs" style="box-shadow: 0 0 5px 3px darkgrey;">
