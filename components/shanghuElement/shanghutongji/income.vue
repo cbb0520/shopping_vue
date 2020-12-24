@@ -31,7 +31,8 @@
         return {
           year:'',
           mothed:[],
-          price:[]
+          price:[],
+          indexmid: sessionStorage.getItem('mid'),
         }
       },
       methods: {
@@ -40,7 +41,7 @@
           var _this = this;
           var params = new URLSearchParams();
           params.append("year", this.year);
-          params.append("mid", 24);
+          params.append("mid", this.indexmid);
           this.$axios.post("/querymonthlyincome.action",params).
           then(function(result) {
             _this.mothed.splice(0, _this.mothed.length)

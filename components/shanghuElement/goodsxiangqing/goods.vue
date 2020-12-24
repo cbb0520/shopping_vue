@@ -7,7 +7,7 @@
         prop="gimgs"
         label="图片">
         <template slot-scope="scope">
-          <el-image :src="scope.row.goods.gimgs" style="width: 100px;height: 90px"></el-image>
+          <el-image :src="'http://localhost:8081/src/assets/'+scope.row.goods.gimgs" style="width: 100px;height: 90px"></el-image>
         </template>
       </el-table-column>
       <el-table-column prop="goods.gname" label="商品名"></el-table-column>

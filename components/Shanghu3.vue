@@ -87,7 +87,7 @@
         });
         this.$axios({
           method: 'post',
-          url: 'updateMerchants.action',
+          url: 'updateMerchants2.action',
           data: formData,
           headers: {
             'Content-Type': 'multipart/form-data'

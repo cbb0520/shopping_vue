@@ -1,7 +1,6 @@
 <!--主页头部-->
 <template>
   <div style="position: fixed;width: 100%;z-index: 999;">
-
     <header style="">
       <el-menu class="el-menu-demo" mode="horizontal">
 
@@ -165,7 +164,8 @@
         indexuaccount: sessionStorage.getItem('uaccount'),
         shoppingCarData: [],
         sumPrice: 0,
-        dialogVisible: false
+        dialogVisible: false,
+        indexuid:sessionStorage.getItem('uid'),
       };
     },
     methods: {
@@ -282,8 +282,10 @@
       yanzheng() {
         var _this = this;
         var params = new URLSearchParams();
-        params.append("uid", 5);
+        params.append("uid",this.indexuaccount);
         this.$axios.post("/yanzhengUserById.action", params).then(function (result) {
+          sessionStorage.setItem("mid", result.data.mid)
+          sessionStorage.setItem("uid", result.data.uid)
           if (result.data.state == '已同意') {
             _this.$router.push({name: "shanghu3"})
 
@@ -314,7 +316,7 @@
       addtmerchant() {
         var _this = this;
         var params = new URLSearchParams();
-        params.append("uid", 5);
+        params.append("uid", this.indexuid);
         params.append("sname", this.$refs.child01.merchants.sname);
         params.append("phone", this.$refs.child01.merchants.phone);
         params.append("mtype", this.$refs.child01.merchants.mtype);

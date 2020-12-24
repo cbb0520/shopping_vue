@@ -37,7 +37,9 @@
           </el-select>
         </el-form-item>
         <el-form-item label="门店照片">
-          <input type="file" @change="getFile($event)"></input>
+          <el-image :src="'./images/shanghuimg/'+imageUrl" style="height: 120px;width: 130px;border: 1px solid gainsboro">
+          </el-image>
+          <input type="file" @change="getFile($event)" style="position: absolute;z-index: 99;height: 120px;width: 130px;margin-left: -130px;opacity: 0;cursor: pointer"></input>
         </el-form-item>
         <el-form-item label="收货地址">
           <select v-model="provincecode" @change="getcity" style="height: 30px;width: 150px">
@@ -83,14 +85,16 @@
           },
           shengs: "",
           shi: "",
-          qu: ""
+          qu: "",
+          indexuid:sessionStorage.getItem('uid'),
+          imageUrl: ''
         }
       },
       methods: {
         getmerchants:function(){
           var _this = this;
           var params=new URLSearchParams();
-          params.append("uid",4)
+          params.append("uid",this.indexuid)
           this.$axios.post("/queryMerchantsuid.action",params)
             .then(function (result) {
               _this.merchants.mid = result.data.mid;
@@ -98,7 +102,7 @@
               _this.merchants.sname = result.data.sname;
               _this.merchants.mname = result.data.mname;
               _this.merchants.certificate = result.data.certificate;
-              _this.merchants.mimgs = result.data.mimgs;
+              _this.imageUrl = result.data.mimgs;
               _this.merchants.phone = result.data.phone;
               _this.merchants.mtype = result.data.mtype;
               var str=result.data.mddress.split("/");
@@ -238,6 +242,23 @@
         getFile: function (event) {  //文件每次选中，触发此方法  将选中的文件内容填充到addform中的img  后台通过img获取文件内容
           this.merchants.img = event.target.files[0];
           console.log(this.merchants.img);
+          var _this = this;
+          let formData = new FormData();
+          formData.append("img", event.target.files[0]);
+          this.$axios({
+            method: 'post',
+            url: 'addImage3.action',
+            data: formData,
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }).then(function (response) {
+            //修改图片直接上传到本地，再显示图片
+            _this.imageUrl = response.data.imgurl;
+            console.log(_this.imageUrl)
+          }).catch(function (error) {
+            console.log("上传失败"+error);
+          });
         }
       },
       created:function () {

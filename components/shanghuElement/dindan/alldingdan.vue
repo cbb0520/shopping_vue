@@ -55,7 +55,7 @@
         var _this = this;
         var params = new URLSearchParams();
         params.append("page", this.page);
-        /* params.append("user", this.name);*/
+        params.append("user.uname", this.name);
         _this.$axios.post("/queryCountDelivers.action", params).then(function (result) {
           _this.tableData = result.data.rows;
           _this.total = result.data.total;
@@ -68,7 +68,6 @@
         var params = new URLSearchParams();
         params.append("did", val);
         _this.$axios.post("/queryAllDel_goods.action", params).then(function (result) {
-          console.log(result.data)
           _this.$refs.del_goods01.del_goods=result.data;
         }).catch(function (error) {
           alert(error)
