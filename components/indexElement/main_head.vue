@@ -285,7 +285,7 @@
         params.append("uid",this.indexuaccount);
         this.$axios.post("/yanzhengUserById.action", params).then(function (result) {
           sessionStorage.setItem("mid", result.data.mid)
-          sessionStorage.setItem("uid", result.data.uid)
+
           if (result.data.state == '已同意') {
             _this.$router.push({name: "shanghu3"})
 
@@ -316,7 +316,7 @@
       addtmerchant() {
         var _this = this;
         var params = new URLSearchParams();
-        params.append("uid", this.indexuid);
+        params.append("uid", sessionStorage.getItem('uid'));
         params.append("sname", this.$refs.child01.merchants.sname);
         params.append("phone", this.$refs.child01.merchants.phone);
         params.append("mtype", this.$refs.child01.merchants.mtype);

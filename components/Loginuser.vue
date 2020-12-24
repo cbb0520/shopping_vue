@@ -70,6 +70,7 @@
                 alert(result.data.msg);
                 //将登录成功的用户名存入store中
                 sessionStorage.setItem("uaccount", result.data.uaccount)
+                sessionStorage.setItem("uid", result.data.uid)
                 _this.$router.push("/index");
               } else {
                 //弹出消息  停留在该页面
