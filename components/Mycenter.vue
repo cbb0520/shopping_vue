@@ -29,6 +29,7 @@
           </el-col>
         </el-row>
       </div>
+      <mianbottom></mianbottom>
     </div>
 </template>
 
@@ -37,6 +38,7 @@
   import Mycenterbody1 from "../components/mycenterElement/mycenterbody1.vue";
   import Mycenteraddress from "../components/mycenterElement/mycenteraddress"
   import Mycentermessage from "../components/mycenterElement/mycentermessage.vue"
+  import Mianbottom from "../components/indexElement/mian_bottom.vue"
     export default {
         name: "Mycenter",
       data(){
@@ -61,7 +63,8 @@
         mainHead: MainHead,
         mycenterbody1:Mycenterbody1,
         mycenteraddress:Mycenteraddress,
-        mycentermessage:Mycentermessage
+        mycentermessage:Mycentermessage,
+        mianbottom:Mianbottom
       }
     }
 </script>

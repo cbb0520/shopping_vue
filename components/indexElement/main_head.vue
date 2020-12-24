@@ -311,9 +311,11 @@
         var _this = this;
         var params = new URLSearchParams();
         params.append("uaccount", this.indexuaccount);
-        this.$axios.post("/queryByuaccount.action", params).then(function (result) {
+        this.$axios.post("/queryByuaccount.action", params)
+          .then(function (result) {
           console.log(result.data);
           _this.userData = result.data
+          _this.indexuimg='http://localhost:8081/src/assets/'+_this.userData.uimg;
         }).catch(function (error) {
           alert(error)
         });
