@@ -5,7 +5,8 @@
       <el-menu class="el-menu-demo" mode="horizontal">
 
         <el-menu-item index="1">
-          <el-image style="height: 45px;width: 135px" src="images/logo.svg" fit="scale-down"></el-image>
+          <el-image style="height: 45px;width: 135px" src="images/logo.svg" fit="scale-down"
+                    @click="goIndex"></el-image>
         </el-menu-item>
 
         <el-submenu index="2">
@@ -18,6 +19,9 @@
 
         <el-menu-item index="3">
           <el-input style="width: 300px" size="medium" placeholder="搜索产品" prefix-icon="el-icon-search"></el-input>
+          <el-button size="medium" style="background: #f55d2c;color: white;">
+            <a href="#goclassify" style="text-decoration: none">搜索</a>
+          </el-button>
         </el-menu-item>
 
         <el-submenu index="4" style="float: right">
@@ -32,6 +36,11 @@
           <el-menu-item index="4-5"><i class="el-icon-potato-strips"></i>优惠</el-menu-item>
           <el-menu-item index="4-6" @click="yanzheng"><i class="el-icon-warning-outline"></i>商户信息</el-menu-item>
           <el-menu-item index="4-7" @click="loginout"><i class="el-icon-lock"></i>退出</el-menu-item>
+          <el-menu-item index="4-6"><i class="el-icon-warning-outline"></i>常见问题</el-menu-item>
+          <el-menu-item index="4-7" @click="loginout"><i class="el-icon-lock"></i>
+            <span v-if="this.indexuaccount == undefined">登录</span>
+            <span v-if="this.indexuaccount != undefined">退出</span>
+          </el-menu-item>
         </el-submenu>
 
         <el-menu-item index="5" style="float: right">
@@ -78,7 +87,7 @@
         </el-menu-item>
 
         <el-menu-item index="6">
-          <span @click="goodsmsg">联系我们</span>
+          <span>联系我们</span>
         </el-menu-item>
 
         <el-menu-item index="7" class="shopping" @click="openShoping" style="float: right;background-color: #f55d2c">
@@ -118,12 +127,13 @@
               </el-col>
               <el-col :span="8">
                 <div style="border: 1px solid #f7f7f7">
-                  <el-image :src="'http://localhost:8081/src/assets/'+goods.gimgs" @click="goodsmsg"></el-image>
+                  <el-image :src="'http://localhost:8081/src/assets/'+goods.gimgs"
+                            @click="goodsmsg(goods.gid)"></el-image>
                 </div>
               </el-col>
               <el-col :span="14">
                 <div>
-                  <b @click="goodsmsg">{{goods.gname}}</b>
+                  <b @click="goodsmsg(goods.gid)">{{goods.gname}}</b>
                   <i class="el-icon-close movieShopping" @click="delShoppingCar(goods.gid)"></i>
                 </div>
                 <div style="margin-top: 60px;">
@@ -143,7 +153,11 @@
         <b>{{sumPrice}}</b></span>
       </h3>
       <div style="padding: 20px 33px;background: #f7f7f7">
-        <el-tooltip class="item" effect="dark" content="我的收获地址" placement="top-start">
+        <el-tooltip placement="top-start">
+          <div slot="content">
+            <p>我的收货地址：<span style="color: #f69733">内蒙古/呼伦贝尔市/鄂温克族自治旗/氨酸股路氨酸股路20号</span></p>
+            <p>优惠卷使用：<span style="color: #f69733">暂无优惠卷</span></p>
+          </div>
           <el-button type="primary">其他信息</el-button>
         </el-tooltip>
         <el-button style="background: #f69733;color: #FFFFFF;float: right">进行结算</el-button>
@@ -166,6 +180,7 @@
         sumPrice: 0,
         dialogVisible: false,
         indexuid:sessionStorage.getItem('uid'),
+        userData:{}
       };
     },
     methods: {
@@ -173,13 +188,22 @@
         sessionStorage.removeItem("uaccount");
         this.$router.push({name: "logins"})
       },
-      myaddress() {
-        this.$router.push({name: "mycenters"})
+      myaddress(){
+        this.$router.push({name:"mycenters"})
+        this.$router.push({name: "logins"})
       },
       closeShoping() {
         this.drawer = false;
       },
       openShoping() {
+        if (this.indexuaccount == undefined) {
+          this.$notify({
+            title: '提示！',
+            message: '请先登录，才可以加入购物车  $_$',
+            position: 'top-right'
+          });
+          return;
+        }
         this.getShoppingCarData();
         this.drawer = true;
       },
@@ -276,8 +300,22 @@
           });
         })
       },
-      goodsmsg() {
-        this.$router.push({name: 'goodsMessage'})
+      goodsmsg(gid) {
+        this.$router.push({name: 'goodsMessage', params: {gid: gid}})
+      },
+      goIndex() {
+        this.$router.push({name: 'indexs'});
+      },
+      getUserData(){
+        var _this = this;
+        var params = new URLSearchParams();
+        params.append("uaccount", this.indexuaccount);
+        this.$axios.post("/queryByuaccount.action", params).then(function (result) {
+          console.log(result.data);
+          _this.userData = result.data
+        }).catch(function (error) {
+          alert(error)
+        });
       },
       yanzheng() {
         var _this = this;
@@ -324,7 +362,6 @@
         params.append("provincecode", this.$refs.child01.provincecode);
         params.append("citycode", this.$refs.child01.citycode);
         params.append("areacode", this.$refs.child01.areacode);
-        console.log(params)
         this.$axios.post("/addMerchants2.action", params).then(function (result) {
           _this.$message({
             message: result.data.msg,
@@ -343,9 +380,14 @@
       adduser:Adduser
     },
     created: function () {
+      this.getUserData();
+      if (this.indexuaccount != undefined) {
+        this.getShoppingCarData();
+      }
     }
   }
 </script>
+
 <style>
   .v-modal{
     display: none;
