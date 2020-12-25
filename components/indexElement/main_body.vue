@@ -23,7 +23,7 @@
           <!--<el-image class="main_body_commodityImg" src="images/baicai.jpg"></el-image>-->
           <h3 id="goodsname" style="margin: 5px" @click="goodsmsg(goods.gid)">{{goods.gname}}</h3>
           <p style="font-size: 15px;margin: 5px;color: gray;">{{goods.classify.fname}}</p>
-          <h3 style="font-family: 黑体;margin: 11px;color: #f69733;font-weight: bold">$ {{goods.price}}</h3>
+          <h3 style="font-family: 黑体;margin: 11px;color: #f69733;font-weight: bold">$ {{goods.gprice}}</h3>
           <el-input-number size="mini" v-model="goods.count" :min=1 :max=goods.limit
                            style="width: 90px;"></el-input-number>
           <i class="el-icon-shopping-cart-2 main_body_gwcBtn"
