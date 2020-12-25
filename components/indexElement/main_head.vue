@@ -26,7 +26,7 @@
 
         <el-submenu index="4" style="float: right">
           <template slot="title">
-            <el-avatar size="small" src="images/img-5.jpg"></el-avatar>
+            <el-avatar size="small" :src="indexuimg"></el-avatar>
             <span>{{indexuaccount}}</span>
           </template>
           <el-menu-item index="4-1"><i class="el-icon-chat-line-square"></i>我的收藏</el-menu-item>
@@ -177,12 +177,14 @@
         sumPrice: 0,
         dialogVisible: false,
         indexuid: sessionStorage.getItem('uid'),
-        userData: {}
+        userData: {},
+        indexuimg:'',
       };
     },
     methods: {
       loginout() {
         sessionStorage.removeItem("uaccount");
+        sessionStorage.removeItem("uimg");
         this.$router.push({name: "logins"})
       },
       myaddress() {
@@ -306,9 +308,11 @@
         var _this = this;
         var params = new URLSearchParams();
         params.append("uaccount", this.indexuaccount);
-        this.$axios.post("/queryByuaccount.action", params).then(function (result) {
+        this.$axios.post("/queryByuaccount.action", params)
+          .then(function (result) {
           console.log(result.data);
           _this.userData = result.data
+          _this.indexuimg='http://localhost:8081/src/assets/'+_this.userData.uimg;
         }).catch(function (error) {
           alert(error)
         });
@@ -343,7 +347,6 @@
                 message: '已取消'
               });
             });
-
           }
         }).catch(function (error) {
           alert(error)
@@ -444,13 +447,12 @@
     width: 100%;
     height: 100%;
   }
-
   .el-badge__content.is-fixed {
     top: 15px;
   }
 
   .gwc {
-    width: 37px;
+    width: 38px;
     border-radius: 50%;
     background: bisque;
     border: 0px;

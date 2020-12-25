@@ -136,7 +136,8 @@
               //注册成功  跳转 首页
               alert(result.data.msg);
               //将注册成功的用户名存入store中
-              sessionStorage.setItem("uaccount", result.data.uaccount)
+              sessionStorage.setItem("uaccount", result.data.uaccount);
+              sessionStorage.setItem("uimg", 'img-5.jpg');
               _this.$router.push("/index");
             } else {
               //弹出消息  停留在该页面
