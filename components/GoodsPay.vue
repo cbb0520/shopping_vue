@@ -183,7 +183,7 @@
       },
       //确认提交收货地址
       okMsg() {
-        if(this.name == '' || this.phone == ''){
+        if (this.name == '' || this.phone == '') {
           this.$message({
             message: '信息有误',
             type: 'info'
@@ -238,7 +238,7 @@
         var params = new URLSearchParams();
         params.append("uaccount", sessionStorage.getItem('uaccount'));
         this.$axios.post("/queryGoodsCarByUid.action", params).then(function (result) {
-          if(result.data.list == null){
+          if (result.data.list == null) {
             _this.$router.push({name: 'indexs'});
             return;
           }
@@ -257,6 +257,19 @@
       //勾选条框
       checked(e) {
         this.ischecked = e;
+      },
+      //生成订单号
+      createOrder() {
+        var vNow = new Date();
+        var sNow = "";
+        sNow += String(vNow.getFullYear());
+        sNow += String(vNow.getMonth() + 1);
+        sNow += String(vNow.getDate());
+        sNow += String(vNow.getHours());
+        sNow += String(vNow.getMinutes());
+        sNow += String(vNow.getSeconds());
+        sNow += String(vNow.getMilliseconds());
+        return sNow;
       },
       //去付款
       goPay() {
@@ -279,34 +292,65 @@
         }
         //再次刷新订单列表
         this.getMyGoodsCarData();
-        if(this.goodsCar.length >0){
-          //去支付
-          var _this = this;
-          this.$confirm('是否支付?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            var params = new URLSearchParams();
-            params.append("uaccount", sessionStorage.getItem('uaccount'));
-            params.append("price", _this.goodsCarSum);
-            params.append("text", _this.payText);
-            this.$axios.post("/insertDeliver.action", params).then(function (result) {
+        if (this.goodsCar.length > 0) {
+
+          //测试支付宝支付
+          var _this = this
+          //添加数据到支付类,生成订单(待付款)-待支付
+          var params = new URLSearchParams();
+          params.append("uaccount", sessionStorage.getItem('uaccount'));
+          params.append("price", this.goodsCarSum);
+          params.append("text", this.payText);
+          this.$axios.post("/insertDeliverPay.action", params).then(function (result) {
+            //添加订单成功,去支付宝扫码付款
+            //组装商品信息
+            var goodsMsg = "";
+            _this.goodsCar.forEach((item, index, ary) => {
+              goodsMsg += ",  " + item.gname + "*" + item.count;
+            })
+            alert(goodsMsg.substr(2));
+            if (result.data > 0) {
+              location.href = "http://localhost:8080/crmsystem_web/payJsp/alipay.trade.page.pay.jsp?" +
+                "WIDout_trade_no=" + _this.createOrder() + "&WIDtotal_amount="+_this.goodsCarSum+"&WIDsubject="+goodsMsg.substring(1)+"&WIDbody="+_this.payText;
+            } else {
+              //添加订单失败
               _this.$message({
-                message: result.data.msg,
-                type: result.data.type
+                message: '订单有误,请重试',
+                type: 'error'
               });
-              _this.getMyGoodsCarData();
-            }).catch(function (error) {
-              alert(error)
-            });
-          }).catch(() => {
-            _this.$message({
-              type: 'info',
-              message: '已取消删除'
-            });
+            }
+          }).catch(function (error) {
+            alert(error)
           });
-        }else {
+
+
+          //去支付
+          // var _this = this;
+          // this.$confirm('是否支付?', '提示', {
+          //   confirmButtonText: '确定',
+          //   cancelButtonText: '取消',
+          //   type: 'warning'
+          // }).then(() => {
+          //   var params = new URLSearchParams();
+          //   params.append("uaccount", sessionStorage.getItem('uaccount'));
+          //   params.append("price", _this.goodsCarSum);
+          //   params.append("text", _this.payText);
+          //   this.$axios.post("/insertDeliver.action", params).then(function (result) {
+          //     _this.$message({
+          //       message: result.data.msg,
+          //       type: result.data.type
+          //     });
+          //     _this.getMyGoodsCarData();
+          //   }).catch(function (error) {
+          //     alert(error)
+          //   });
+          // }).catch(() => {
+          //   _this.$message({
+          //     type: 'info',
+          //     message: '已取消删除'
+          //   });
+          // });
+        } else {
           this.$message({
             message: '你的商品信息错误，请重新刷新',
             type: 'error'

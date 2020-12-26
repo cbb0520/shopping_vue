@@ -24,7 +24,7 @@
           </el-button>
         </el-menu-item>
 
-        <el-submenu index="4" style="float: right">
+        <el-submenu index="4" style="float: right" v-if="indexuaccount != null">
           <template slot="title">
             <el-avatar size="small" :src="indexuimg"></el-avatar>
             <span>{{indexuaccount}}</span>
@@ -42,9 +42,12 @@
             <span v-if="this.indexuaccount != undefined">退出</span>
           </el-menu-item>
         </el-submenu>
+        <el-menu-item index="4" style="float: right" v-if="indexuaccount == null">
+          <el-link icon="el-icon-user" :underline="false" @click="loginout">去登陆</el-link>
+        </el-menu-item>
 
         <el-menu-item index="5" style="float: right">
-          <el-badge :value="3" class="item">
+          <el-badge :value="0" class="item">
             <el-button class="gwc" size="small"><i class="el-icon-star-off"></i></el-button>
           </el-badge>
         </el-menu-item>
@@ -178,7 +181,7 @@
         dialogVisible: false,
         indexuid: sessionStorage.getItem('uid'),
         userData: {},
-        indexuimg:'',
+        indexuimg: '',
       };
     },
     methods: {
@@ -310,10 +313,10 @@
         params.append("uaccount", this.indexuaccount);
         this.$axios.post("/queryByuaccount.action", params)
           .then(function (result) {
-          console.log(result.data);
-          _this.userData = result.data
-          _this.indexuimg='http://localhost:8081/src/assets/'+_this.userData.uimg;
-        }).catch(function (error) {
+            console.log(result.data);
+            _this.userData = result.data
+            _this.indexuimg = 'http://localhost:8081/src/assets/' + _this.userData.uimg;
+          }).catch(function (error) {
           alert(error)
         });
       },
@@ -447,6 +450,7 @@
     width: 100%;
     height: 100%;
   }
+
   .el-badge__content.is-fixed {
     top: 15px;
   }
