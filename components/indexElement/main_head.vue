@@ -188,6 +188,7 @@
       loginout() {
         sessionStorage.removeItem("uaccount");
         sessionStorage.removeItem("uimg");
+        sessionStorage.removeItem("uid");
         this.$router.push({name: "logins"})
       },
       myaddress() {

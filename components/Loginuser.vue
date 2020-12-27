@@ -76,6 +76,7 @@
                 });
                 //将登录成功的用户名存入store中
                 sessionStorage.setItem("uaccount", result.data.uaccount);
+                sessionStorage.setItem("uid", result.data.uid);
                 sessionStorage.setItem("uimg", result.data.uimg);
                 _this.$router.push("/index");
               } else {
