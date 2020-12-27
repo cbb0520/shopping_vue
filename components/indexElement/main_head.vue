@@ -35,7 +35,7 @@
           <el-menu-item index="4-4" @click="myaddress"><i class="el-icon-location-outline"></i>我的地址</el-menu-item>
           <el-menu-item index="4-5"><i class="el-icon-potato-strips"></i>优惠</el-menu-item>
           <el-menu-item index="4-6" @click="yanzheng"><i class="el-icon-warning-outline"></i>商户信息</el-menu-item>
-          <el-menu-item index="4-7" @click="loginout"><i class="el-icon-lock"></i>退出</el-menu-item>
+          <!--<el-menu-item index="4-7" @click="loginout"><i class="el-icon-lock"></i>退出</el-menu-item>-->
           <el-menu-item index="4-6"><i class="el-icon-warning-outline"></i>常见问题</el-menu-item>
           <el-menu-item index="4-7" @click="loginout"><i class="el-icon-lock"></i>
             <span v-if="this.indexuaccount == undefined">登录</span>

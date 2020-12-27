@@ -39,18 +39,20 @@
   import Mycenteraddress from "../components/mycenterElement/mycenteraddress"
   import Mycentermessage from "../components/mycenterElement/mycentermessage.vue"
   import Mianbottom from "../components/indexElement/mian_bottom.vue"
+  import Mycentergaishu from "../components/mycenterElement/mycentergaishu.vue";
+  import Mycenterorder from "../components/mycenterElement/mycenterorder.vue"
     export default {
         name: "Mycenter",
       data(){
         return {
           daohang:[
-            {id:1,icond:'el-icon-menu',lables:'概述',urls:'mycenteraddress'},
+            {id:1,icond:'el-icon-menu',lables:'概述',urls:'mycentergaishu'},
             {id:2,icond:'el-icon-location',lables:'我的地址',urls:'mycenteraddress'},
-            {id:3,icond:'el-icon-s-claim',lables:'我的订单',urls:'mycenteraddress'},
+            {id:3,icond:'el-icon-s-claim',lables:'我的订单',urls:'mycenterorder'},
             {id:4,icond:'el-icon-user-solid',lables:'我的信息',urls:'mycentermessage'},
           ],
           title:'概述',
-          center:'mycenteraddress'
+          center:'mycentergaishu',
         }
       },
       methods:{
@@ -64,7 +66,10 @@
         mycenterbody1:Mycenterbody1,
         mycenteraddress:Mycenteraddress,
         mycentermessage:Mycentermessage,
-        mianbottom:Mianbottom
+        mianbottom:Mianbottom,
+        mycentergaishu:Mycentergaishu,
+        mycenterorder:Mycenterorder
+
       }
     }
 </script>
@@ -86,7 +91,7 @@
   #mycenterdiv3{
     background-color:#F7F9F9;
     width: 100%;
-    height: 550px;
+    height: 600px;
     padding-top: 400px;
 
    /* padding-top: 500px;*/
