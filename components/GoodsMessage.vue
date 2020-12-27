@@ -40,7 +40,7 @@
               </div>
               <div style="background: #f7f7f7!important;height: 130px;border-radius: 10px;padding: 16px">
                 <p style="color: #7c72ff;font-size: 18px;font-weight: 500;margin: 0px 10px 15px 0px">
-                  价格:<span style="color: #8f91ac;font-size: 18px;font-weight: 400;">￥{{goodsData.price}}</span>
+                  价格:<span style="color: #8f91ac;font-size: 18px;font-weight: 400;">￥{{goodsData.gprice}}</span>
                 </p>
                 <el-input-number v-model="goodsData.count" :min=1 :max=goodsData.limit size="mini"
                                  style="width: 90px;margin-bottom: 20px"></el-input-number>

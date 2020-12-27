@@ -24,7 +24,7 @@
           </el-button>
         </el-menu-item>
 
-        <el-submenu index="4" style="float: right">
+        <el-submenu index="4" style="float: right" v-if="indexuaccount != null">
           <template slot="title">
             <el-avatar size="small" :src="indexuimg"></el-avatar>
             <span>{{indexuaccount}}</span>
@@ -42,9 +42,12 @@
             <span v-if="this.indexuaccount != undefined">退出</span>
           </el-menu-item>
         </el-submenu>
+        <el-menu-item index="4" style="float: right" v-if="indexuaccount == null">
+          <el-link icon="el-icon-user" :underline="false" @click="loginout">去登陆</el-link>
+        </el-menu-item>
 
         <el-menu-item index="5" style="float: right">
-          <el-badge :value="3" class="item">
+          <el-badge :value="0" class="item">
             <el-button class="gwc" size="small"><i class="el-icon-star-off"></i></el-button>
           </el-badge>
         </el-menu-item>
@@ -117,6 +120,10 @@
         <span style="color: #f69733;padding-left: 28px;">我的购物车({{shoppingCarData.length}}件)</span>
         <i class="el-icon-close shopingIcon" @click="closeShoping"></i>
       </h2>
+      <div v-if="shoppingCarData.length<1">
+        <el-image src="../../images/car_null.jpg" style="width: 200px;height: 200px;"></el-image>
+        <h2 style="color: #726D6D;font-family: 黑体;margin: -120px 0px 0px 210px;position: absolute">空空如也 ~_~</h2>
+      </div>
       <template>
         <ul class="infinite-list shoppingUl" v-infinite-scroll="load">
           <li v-for="goods in shoppingCarData" class="infinite-list-item showShopping">
@@ -140,7 +147,7 @@
                   <el-input-number size="mini" v-model="goods.count" @change="selectCountGoods(goods.gid,goods.count)"
                                    :min=1 :max=99 style="width: 95px;"></el-input-number>
                   <span style="color: #f69733;float:right;">￥
-                  <b>{{goods.count * goods.price}}</b></span>
+                  <b>{{goods.count * goods.gprice}}</b></span>
                 </div>
               </el-col>
             </el-row>
@@ -153,13 +160,6 @@
         <b>{{sumPrice}}</b></span>
       </h3>
       <div style="padding: 20px 33px;background: #f7f7f7">
-        <el-tooltip placement="top-start">
-          <div slot="content">
-            <p>我的收货地址：<span style="color: #f69733">内蒙古/呼伦贝尔市/鄂温克族自治旗/氨酸股路氨酸股路20号</span></p>
-            <p>优惠卷使用：<span style="color: #f69733">暂无优惠卷</span></p>
-          </div>
-          <el-button type="primary">其他信息</el-button>
-        </el-tooltip>
         <el-button style="background: #f69733;color: #FFFFFF;float: right" @click="goGoodsPay">进行结算</el-button>
       </div>
     </el-drawer>
@@ -179,19 +179,19 @@
         shoppingCarData: [],
         sumPrice: 0,
         dialogVisible: false,
-        indexuid:sessionStorage.getItem('uid'),
-        userData:{},
-        indexuimg:'',
+        indexuid: sessionStorage.getItem('uid'),
+        userData: {},
+        indexuimg: '',
       };
     },
     methods: {
-      loginout(){
+      loginout() {
         sessionStorage.removeItem("uaccount");
         sessionStorage.removeItem("uimg");
         this.$router.push({name: "logins"})
       },
-      myaddress(){
-        this.$router.push({name:"mycenters"})
+      myaddress() {
+        this.$router.push({name: "mycenters"})
       },
       closeShoping() {
         this.drawer = false;
@@ -233,7 +233,7 @@
         let sumPrice = 0;
         this.shoppingCarData.forEach((item, index, ary) => {
           if (item.select == true) {
-            sumPrice += item.price * item.count;
+            sumPrice += item.gprice * item.count;
           }
         })
         this.sumPrice = sumPrice;
@@ -307,23 +307,23 @@
       goIndex() {
         this.$router.push({name: 'indexs'});
       },
-      getUserData(){
+      getUserData() {
         var _this = this;
         var params = new URLSearchParams();
         params.append("uaccount", this.indexuaccount);
         this.$axios.post("/queryByuaccount.action", params)
           .then(function (result) {
-          console.log(result.data);
-          _this.userData = result.data
-          _this.indexuimg='http://localhost:8081/src/assets/'+_this.userData.uimg;
-        }).catch(function (error) {
+            console.log(result.data);
+            _this.userData = result.data
+            _this.indexuimg = 'http://localhost:8081/src/assets/' + _this.userData.uimg;
+          }).catch(function (error) {
           alert(error)
         });
       },
       yanzheng() {
         var _this = this;
         var params = new URLSearchParams();
-        params.append("uid",this.indexuaccount);
+        params.append("uid", this.indexuaccount);
         this.$axios.post("/yanzhengUserById.action", params).then(function (result) {
           sessionStorage.setItem("mid", result.data.mid)
           console.log(result.data.state)
@@ -335,10 +335,9 @@
               message: '警告哦，正在审核中',
               type: 'warning'
             });
-          }else if(result.data.state == '已拒绝'){
+          } else if (result.data.state == '已拒绝') {
             _this.$message.error('警告哦，已拒绝你的商户申请');
-          }
-          else {
+          } else {
             _this.$confirm('你还不是商户, 是否申请成为商户?', '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消',
@@ -381,12 +380,35 @@
         });
       },
       //跳到支付页面
-      goGoodsPay(){
+      goGoodsPay() {
+        //判断是否有商品
+        if (this.shoppingCarData.length < 1) {
+          this.$message({
+            message: '购物车没有商品，请先添加购物车',
+            type: 'info'
+          });
+          return;
+        }
+        //判断是否选择了商品
+        var i = 0;
+        this.shoppingCarData.forEach((item, indec, row) => {
+          if (item.select) {
+            i = 1;
+          }
+        })
+        if (i == 0) {
+          this.$message({
+            message: '请选择至少一个商品',
+            type: 'info'
+          });
+          return;
+          ;
+        }
         this.$router.push({name: "goodsPay"})
       }
     },
     components: {
-      adduser:Adduser
+      adduser: Adduser
     },
     created: function () {
       this.getUserData();
@@ -398,9 +420,10 @@
 </script>
 
 <style>
-  .v-modal{
+  .v-modal {
     display: none;
   }
+
   .showShopping {
     list-style-type: none;
     height: 120px;
@@ -427,6 +450,7 @@
     width: 100%;
     height: 100%;
   }
+
   .el-badge__content.is-fixed {
     top: 15px;
   }
