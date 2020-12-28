@@ -70,14 +70,18 @@
             .then(function (result) {
               if (result.data.code == "0") {
                 //登录成功  跳转 首页
-                alert(result.data.msg);
+              _this.$message({
+                  message:result.data.msg,
+                  type:'success'
+                });
                 //将登录成功的用户名存入store中
                 sessionStorage.setItem("uaccount", result.data.uaccount);
+                sessionStorage.setItem("uid", result.data.uid);
                 sessionStorage.setItem("uimg", result.data.uimg);
                 _this.$router.push("/index");
               } else {
                 //弹出消息  停留在该页面
-                alert(result.data.msg);
+                _this.$message.error(result.data.msg);
               }
             }).catch(function (error) {
             alert(error);

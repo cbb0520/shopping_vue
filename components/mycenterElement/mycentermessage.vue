@@ -1,5 +1,5 @@
 <template>
-    <div id="mycentermessage" style="width: 900px;height:470px;background-color: white">
+  <el-card class="box-card" body-style="border-radius: 4px"  style="width: 900px;height: 470px;background-color: white">
       <br>&#12288;&#12288;&#12288;&#12288;&#12288;&#12288;&#12288;&#12288;&#12288;
       <label><strong>账号:</strong></label>&#12288;&#12288;&#12288;&#12288;&#12288;
       <span>{{myuaccount}}</span>
@@ -25,7 +25,7 @@
             <el-button type="primary" @click="edituserbtn">确 定</el-button>
           </span>
       </el-dialog>
-    </div>
+  </el-card>
 
 </template>
 
