@@ -16,7 +16,7 @@
         <el-row class="tac">
           <el-col :span="5" push="1" >
             <el-menu>
-              <el-menu-item v-for="menus in daohang" @click="addTab(menus.lables,menus.urls)">
+              <el-menu-item v-for="menus in daohang" @click="addTabs(menus.lables,menus.urls)">
                 <i :class="menus.icond"></i>
                 <span slot="title">{{menus.lables}}</span>
               </el-menu-item>
@@ -36,7 +36,7 @@
 <script>
   import MainHead from "../components/indexElement/main_head.vue";
   import Mycenterbody1 from "../components/mycenterElement/mycenterbody1.vue";
-  import Mycenteraddress from "../components/mycenterElement/mycenteraddress"
+  import Mycenteraddress from "../components/mycenterElement/mycenteraddress.vue"
   import Mycentermessage from "../components/mycenterElement/mycentermessage.vue"
   import Mianbottom from "../components/indexElement/mian_bottom.vue"
   import Mycentergaishu from "../components/mycenterElement/mycentergaishu.vue";
@@ -56,7 +56,7 @@
         }
       },
       methods:{
-        addTab(lables,urls){
+        addTabs(lables,urls){
           this.title=lables;
           this.center=urls;
         }
