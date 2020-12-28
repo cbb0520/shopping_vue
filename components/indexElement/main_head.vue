@@ -18,13 +18,13 @@
         </el-submenu>
 
         <el-menu-item index="3">
-          <el-input style="width: 300px" size="medium" placeholder="搜索产品" prefix-icon="el-icon-search"></el-input>
-          <el-button size="medium" style="background: #f55d2c;color: white;">
+          <el-input style="width: 300px" size="medium" v-model="search" placeholder="搜索产品" prefix-icon="el-icon-search"></el-input>
+          <el-button size="medium" style="background: #f55d2c;color: white;" @click="searchBtn">
             <a href="#goclassify" style="text-decoration: none">搜索</a>
           </el-button>
         </el-menu-item>
 
-        <el-submenu index="4" style="float: right" v-if="indexuaccount != null">
+        <el-submenu index="4" style="float: right;width: 155px;" v-if="indexuaccount != null">
           <template slot="title">
             <el-avatar size="small" :src="indexuimg"></el-avatar>
             <span>{{indexuaccount}}</span>
@@ -125,7 +125,7 @@
         <h2 style="color: #726D6D;font-family: 黑体;margin: -120px 0px 0px 210px;position: absolute">空空如也 ~_~</h2>
       </div>
       <template>
-        <ul class="infinite-list shoppingUl" v-infinite-scroll="load">
+        <ul class="infinite-list shoppingUl" @v-infinite-scroll="load">
           <li v-for="goods in shoppingCarData" class="infinite-list-item showShopping">
             <el-row :gutter="20">
               <el-col :span="2">
@@ -159,7 +159,7 @@
         <span style="color: #f69733;float:right;">￥
         <b>{{sumPrice}}</b></span>
       </h3>
-      <div style="padding: 20px 33px;background: #f7f7f7">
+      <div style="padding: 20px 33px;background: #f7f7f7;height: 150px;">
         <el-button style="background: #f69733;color: #FFFFFF;float: right" @click="goGoodsPay">进行结算</el-button>
       </div>
     </el-drawer>
@@ -182,6 +182,7 @@
         indexuid: sessionStorage.getItem('uid'),
         userData: {},
         indexuimg: '',
+        search:''
       };
     },
     methods: {
@@ -405,6 +406,10 @@
           ;
         }
         this.$router.push({name: "goodsPay"})
+      },
+      //搜索商品
+      searchBtn(){
+        this.$parent.$refs.mainBody.getGoodsData();
       }
     },
     components: {

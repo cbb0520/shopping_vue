@@ -66,6 +66,7 @@
         params.append("rows", "12");
         params.append("page", this.page);
         params.append("classify", this.fid);
+        params.append("gname", this.$parent.$refs.mainHead.search);
         this.$axios.post("/queryAllGoods.action", params).then(function (result) {
           _this.goodsData = result.data.rows;
           _this.total = result.data.total;
