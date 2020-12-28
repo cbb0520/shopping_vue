@@ -14,6 +14,7 @@
         </el-form-item>
       </el-form>
      <div id="main" style="width: 800px;height:500px;"></div>
+      <span>年总收入:{{sum}}元</span>
     </div>
 </template>
 <script>
@@ -33,12 +34,14 @@
           mothed:[],
           price:[],
           indexmid: sessionStorage.getItem('mid'),
+          sum:0
         }
       },
       methods: {
         getDataqianwu() { //获取数据方法
           var length = 0;
           var _this = this;
+          var sum=0;
           var params = new URLSearchParams();
           params.append("year", this.year);
           params.append("mid", this.indexmid);
@@ -48,23 +51,22 @@
             _this.price.splice(0, _this.price.length)
             length = result.data.length
             for(var i=0;i<length;i++){
+               sum+=result.data[i].total;
               _this.mothed.push(result.data[i].mothen);
               _this.price.push(result.data[i].total);
             }
-            console.log(_this.mothed)
-            console.log(_this.price)
             var myChart = echarts.init(document.getElementById('main'));
             // 指定图表的配置项和数据
             let option = {
               title: {
-                text: "一年的收入情况"
+                text: "一年的收入情况",
               },
               tooltip: {},
               legend: {
-                data: ["销量"]
+                data: [sum]
               },
               xAxis: {
-                data: _this.mothed
+                data:_this.mothed
               },
               yAxis: {},
               series: [
@@ -77,6 +79,7 @@
             };
             // 使用刚指定的配置项和数据显示图表。
             myChart.setOption(option);
+            _this.sum=sum;
           }).
           catch(function(error) {
             alert(error)
