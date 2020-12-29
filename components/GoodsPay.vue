@@ -11,7 +11,7 @@
         <el-row :gutter="20">
           <!--收货地址信息框-->
           <el-col :span="6" v-for="a in address">
-            <div :class="'useressDiv '+a.isselect" name="useressDiv" @click="selectAddrss($event,a.aid)">
+            <div :class="'useressDiv '+a.isselect" name="useressDiv" @click="selectAddrss($event,a.aid,a.merchants.mid)">
               <i class="el-icon-close removeAddr" @click="removeAddr($event,a.aid)"></i>
               <p>收货人：<span>{{a.name}}</span></p>
               <p>联系电话：<span>{{a.phone}}</span></p>
@@ -29,7 +29,7 @@
               <el-form size="mini" class="demo-form-inline">
                 <el-form-item>
                   <el-select placeholder="选择收货地址" v-model="mid" style="width: 100%;">
-
+                    <el-option v-for="m in merchantsData" :label="m.mddress" :value="m.mid"></el-option>
                   </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -119,13 +119,25 @@
         goodsCarSum: 0, //订单总价
         name: '',  //添加姓名
         phone: '', //添加电话
-        mid: '选择收货地址', //商户id
+        mid: '', //商户id
         payText: '',   //商品附加信息
+        merchantsData:[], //商户数据
       }
     },
     methods: {
+      //获取所有商户数据
+      getMerchantsData(){
+        var _this = this;
+        var params = new URLSearchParams();
+        params.append("rows", 99);
+        this.$axios.post("/queryCountMerchants.action", params).then(function (result) {
+          _this.merchantsData = result.data.rows;
+        }).catch(function (error) {
+          alert(error)
+        });
+      },
       //点击收货地址执行方法
-      selectAddrss(e, aid) {
+      selectAddrss(e, aid,mid) {
         // 获取绑定事件的DOM元素。
         var ee = e.currentTarget;
         if (ee.className == "useressDiv newUseressDiv") {
@@ -148,6 +160,7 @@
         ee.className += " newUseressDiv";
         var params = new URLSearchParams();
         params.append("aid", aid);
+        params.append("mid", mid);
         params.append("uaccount", sessionStorage.getItem('uaccount'));
         this.$axios.post("/insertAddClass.action", params).then(function (result) {
         }).catch(function (error) {
@@ -178,7 +191,7 @@
       cancelMsg() {
         this.name = '';
         this.phone = '';
-        this.mid = '选择收货地址';
+        this.mid = '';
         document.getElementById("addressmsg").style.setProperty('display', 'none')
       },
       //确认提交收货地址
@@ -194,7 +207,7 @@
         var _this = this;
         var params = new URLSearchParams();
         params.append("uaccount", sessionStorage.getItem('uaccount'));
-        params.append("mid", 17);
+        params.append("mid", this.mid);
         params.append("name", this.name);
         params.append("phone", this.phone);
         this.$axios.post("/insertAddress.action", params).then(function (result) {
@@ -365,6 +378,7 @@
     created() {
       this.getAddress();
       this.getMyGoodsCarData();
+      this.getMerchantsData();
     }
   }
 </script>
