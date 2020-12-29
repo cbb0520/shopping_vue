@@ -33,10 +33,7 @@
               </div>
               <div
                 style="color: #3e3f5e;font-weight: 400;font-size: 14px;line-height: 30px;padding-right: 40px;height: 125px">
-                Lorem ipsum dolor坐下来，保持自如。Nullam臭名昭著，在blandit临时的purus，nulla felis dictum eros，sed volutpat dioo
-                sapien id lectus。Cras mollis massa ac congue posuere。Fusce viverra mauris vel magna优质aliquet。Nunc
-                Tincidunt,前女星sénerisqueneque mauris sed。uera mauris vel magna优质aliquet。Nunc
-                Tincidunt,前女星sénerisqueneque mauris sed。ue
+                {{goodsData.gdetails}}
               </div>
               <div style="background: #f7f7f7!important;height: 130px;border-radius: 10px;padding: 16px">
                 <p style="color: #7c72ff;font-size: 18px;font-weight: 500;margin: 0px 10px 15px 0px">
@@ -533,6 +530,7 @@
             }).catch(function (error) {
               alert(error)
             });
+            _this.getGoodsComment(_this.gid)
           }).catch(function (error) {
             alert(error)
           });

@@ -360,6 +360,7 @@
       addtmerchant() {
         var _this = this;
         var params = new URLSearchParams();
+        console.log(sessionStorage.getItem('uid'))
         params.append("uid", sessionStorage.getItem('uid'));
         params.append("sname", this.$refs.child01.merchants.sname);
         params.append("phone", this.$refs.child01.merchants.phone);
