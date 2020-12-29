@@ -50,6 +50,7 @@
             {id:2,icond:'el-icon-location',lables:'我的地址',urls:'mycenteraddress'},
             {id:3,icond:'el-icon-s-claim',lables:'我的订单',urls:'mycenterorder'},
             {id:4,icond:'el-icon-user-solid',lables:'我的信息',urls:'mycentermessage'},
+            {id:5,icond:'el-icon-star-on',lables:'我的收藏',urls:''},
           ],
           title:'概述',
           center:'mycentergaishu',
