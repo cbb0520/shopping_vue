@@ -164,6 +164,7 @@
                                   <el-image :src="'http://localhost:8081/src/assets/'+r.user.uimg"
                                             style="width: 30px;height: 30px;float:left;margin-top: -5px"></el-image>
                                   <span style="color: #726D6D;font-size: 14px;float:left;margin: 0px 20px">{{r.user.uname}}</span>
+                                  <span v-if="r.user.uaccount == uaccount" class="removeCommentChild" @click="removeCommentChild(r.id,i.id)">删除</span>
                                   <p style="margin: 0px;color: #726D6D;font-size: 14px;">{{r.date}}</p>
                                   <p style="font-size: 14px;color: #726D6D;line-height: 20px;margin-left: 49px">
                                     {{r.text}}
@@ -330,9 +331,9 @@
           _this.replyChild = result.data;
           if (document.getElementsByClassName("parentCommentReply" + id)[0].style.display == "block") {
             document.getElementsByClassName("parentCommentReply" + id)[0].style.setProperty('display', 'none')
-          }else {
+          } else {
             for (var i = 0; i < document.getElementsByClassName("parentCommentReply").length; i++) {
-                document.getElementsByClassName("parentCommentReply")[i].style.setProperty('display', 'none')
+              document.getElementsByClassName("parentCommentReply")[i].style.setProperty('display', 'none')
             }
             document.getElementsByClassName("parentCommentReply" + id)[0].style.setProperty('display', 'block')
           }
@@ -343,7 +344,7 @@
       //匿名提交
       anonymityCommit() {
         //没登陆不让点
-        if(this.uaccount == null){
+        if (this.uaccount == null) {
           this.$message({
             message: '登录后才能评论哦',
             type: 'info'
@@ -375,7 +376,7 @@
       //直接提交
       directCommit() {
         //没登陆不让点
-        if(this.uaccount == null){
+        if (this.uaccount == null) {
           this.$message({
             message: '登录后才能评论哦',
             type: 'info'
@@ -429,7 +430,7 @@
       //点赞
       praiseBtn(e, id) {
         //没登陆不让点
-        if(this.uaccount == null){
+        if (this.uaccount == null) {
           this.$message({
             message: '登录后才能点赞哦',
             type: 'info'
@@ -474,7 +475,7 @@
       //显示回复
       showReplyChildB(id) {
         //没登陆不让点
-        if(this.uaccount == null){
+        if (this.uaccount == null) {
           this.$message({
             message: '登录后才能回复哦',
             type: 'info'
@@ -497,7 +498,6 @@
       },
       //发表回复
       sendReplyChild(id) {
-
         var _this = this;
         var params = new URLSearchParams();
         params.append("uaccount", this.uaccount);
@@ -509,6 +509,34 @@
           _this.getGoodsById();
         }).catch(function (error) {
           alert(error)
+        });
+      },
+      //删除回复的评论
+      removeCommentChild(id,gcid){
+        this.$confirm('确认删除该评论吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          var _this = this;
+          var params = new URLSearchParams();
+          params.append("id", id);
+          this.$axios.post("/removeComment.action", params).then(function (result) {
+            _this.$message({
+              message: "删除成功",
+              type: "info"
+            });
+            var params2 = new URLSearchParams();
+            params2.append("gcid", gcid);
+            _this.$axios.post("/queryAllReplyChild.action", params2).then(function (result) {//parentCommentReply
+              _this.replyChild = result.data;
+            }).catch(function (error) {
+              alert(error)
+            });
+          }).catch(function (error) {
+            alert(error)
+          });
+        }).catch(() => {
         });
       }
     },
@@ -561,8 +589,8 @@
 
   .comment_reply {
     /*display: none;*/
-    padding: 20px 0px;
-    margin: 10px 0px;
+    padding-top: 20px;
+    margin-top: 10px;
     border-top: 1px solid gainsboro;
   }
 
@@ -617,5 +645,18 @@
     cursor: pointer;
     color: #FFFFFF;
     background: #f69733;
+  }
+
+  .removeCommentChild {
+    color: #726D6D;
+    font-size: 14px;
+    text-decoration: underline;
+    position: absolute;
+    margin-left: 30%
+  }
+
+  .removeCommentChild:hover {
+    cursor: pointer;
+    color: #f55d2c;
   }
 </style>
