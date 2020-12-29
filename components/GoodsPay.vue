@@ -321,7 +321,6 @@
             _this.goodsCar.forEach((item, index, ary) => {
               goodsMsg += ",  " + item.gname + "*" + item.count;
             })
-            alert(goodsMsg.substr(2));
             if (result.data > 0) {
               location.href = "http://localhost:8080/crmsystem_web/payJsp/alipay.trade.page.pay.jsp?" +
                 "WIDout_trade_no=" + _this.createOrder() + "&WIDtotal_amount="+_this.goodsCarSum+"&WIDsubject="+goodsMsg.substring(1)+"&WIDbody="+_this.payText;
