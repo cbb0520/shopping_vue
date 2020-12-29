@@ -311,192 +311,190 @@
         uname: '',
         uphone: '',
 
-      }
-    },
-    methods: {
-      getDfkDindanDate() {
-        var _this = this;
-        var params = new URLSearchParams();
-        params.append("uid", sessionStorage.getItem('uid'));
-        this.$axios.post("queryDaiFuKuan.action", params)
-          .then(function (result) {
-            if (result.data == "") {
-              _this.dfkno = true;
-            } else {
-              _this.dfkno = false;
-              _this.dfkdindanDate = result.data;
-            }
-          }).catch(function (error) {
-          alert(error);
-        });
+          }
       },
-      getDthDindanDate() {
-        var _this = this;
-        var params = new URLSearchParams();
-        params.append("uid", sessionStorage.getItem('uid'));
-        this.$axios.post("queryDaiTiHuo.action", params)
-          .then(function (result) {
-            if (result.data == "") {
-              _this.dthno = true;
-            } else {
-              _this.dthno = false;
-              _this.dthdindanDate = result.data;
-            }
-          }).catch(function (error) {
-          alert(error);
-        });
-      },
-      getYwcDindanDate() {
-        var _this = this;
-        var params = new URLSearchParams();
-        params.append("uid", sessionStorage.getItem('uid'));
-        this.$axios.post("queryYiWanCheng.action", params)
-          .then(function (result) {
-            if (result.data == "") {
-              _this.ywcno = true;
-            } else {
-              _this.ywcno = false;
-              _this.ywcdindanDate = result.data;
-            }
-          }).catch(function (error) {
-          alert(error);
-        });
-      },
-      userQrSh(did) {
-        var _this = this;
-        this.$confirm('确定已经收到商品了吗?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          var params = new URLSearchParams();
-          params.append("did", did);
-          this.$axios.post("QueRengShouHuo.action", params)
+      methods:{
+          getDfkDindanDate(){
+            var _this=this;
+            var params=new URLSearchParams();
+            params.append("uid",sessionStorage.getItem('uid'));
+            this.$axios.post("queryDaiFuKuan.action",params)
+              .then(function (result) {
+                if (result.data.length < 1){
+                  _this.dfkno=true;
+                  _this.dfkdindanDate=[];
+                }else {
+                  _this.dfkno=false;
+                  _this.dfkdindanDate=result.data;
+                }
+              }).catch(function (error) {
+              alert(error);
+            });
+          },
+          getDthDindanDate(){
+          var _this=this;
+          var params=new URLSearchParams();
+          params.append("uid",sessionStorage.getItem('uid'));
+          this.$axios.post("queryDaiTiHuo.action",params)
             .then(function (result) {
-              if (result.data.code == "1") {
-                _this.$message({
-                  type: 'success',
-                  message: result.data.msg
-                });
-                _this.getDthDindanDate();
-                _this.getYwcDindanDate();
-              } else {
-                _this.$message({
-                  type: 'success',
-                  message: result.data.msg
-                });
+              console.log(result.data.length)
+              if (result.data.length < 1){
+                _this.dthno=true;
+                _this.dthdindanDate=[];
+              }else {
+                _this.dthno=false;
+                _this.dthdindanDate=result.data;
               }
             }).catch(function (error) {
             alert(error);
           });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消收货'
-          });
-        });
-      },
-      userQxdd(did) {
-        var _this = this;
-        this.$confirm('确认取消订单?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-          center: true
-        }).then(() => {
-          var params = new URLSearchParams();
-          params.append("did", did);
-          this.$axios.post("quXiaoDinDan.action", params)
+        },
+          getYwcDindanDate(){
+          var _this=this;
+          var params=new URLSearchParams();
+          params.append("uid",sessionStorage.getItem('uid'));
+          this.$axios.post("queryYiWanCheng.action",params)
             .then(function (result) {
-              _this.$message({
-                type: 'success',
-                message: result.data.msg
-              });
-              _this.getDfkDindanDate();
+              if (result.data==""){
+                _this.ywcno=true;
+              }else {
+                _this.ywcno=false;
+                _this.ywcdindanDate=result.data;
+              }
             }).catch(function (error) {
             alert(error);
           });
-        }).catch(() => {
-        });
+        },
+          userQrSh(did){
+            var _this=this;
+            this.$confirm('确定已经收到商品了吗?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              var params=new URLSearchParams();
+              params.append("did",did);
+              this.$axios.post("QueRengShouHuo.action",params)
+                .then(function (result) {
+                  if (result.data.code=="1"){
+                    _this.$message({
+                      type: 'success',
+                      message: result.data.msg
+                    });
+                    _this.getDthDindanDate();
+                    _this.getYwcDindanDate();
+                  }else {
+                    _this.$message({
+                      type: 'success',
+                      message: result.data.msg
+                    });
+                  }
+                }).catch(function (error) {
+                alert(error);
+              });
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消收货'
+              });
+            });
+          },
+          userQxdd(did){
+            var _this=this;
+            this.$confirm('确认取消订单?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+              center: true
+            }).then(() => {
+              var params=new URLSearchParams();
+              params.append("did",did);
+              this.$axios.post("quXiaoDinDan.action",params)
+                .then(function (result) {
+                    _this.$message({
+                      type: 'success',
+                      message: result.data.msg
+                    });
+                  _this.getDfkDindanDate();
+                }).catch(function (error) {
+                alert(error);
+              });
+            }).catch(() => {
+            });
+          },
+          ddxqmouseover($event){
+          $event.currentTarget.className="ddxqjinru";
+        },/*鼠标进入事件*/
+          ddxqmouseout($event){
+          $event.currentTarget.className="ddxqlikai";
+        },/*鼠标离开事件*/
+          /*查看已完成的订单详情*/
+         getYwcDindanXqDate(did){
+            this.ywcddxqVisible=true;
+          var _this=this;
+          var params=new URLSearchParams();
+          params.append("did",did);
+          this.$axios.post("queryDdXq.action",params)
+            .then(function (result) {
+                _this.ywcddxqData=result.data;
+                _this.sname=result.data.merchants.sname;
+              _this.phone=result.data.merchants.phone;
+              _this.mddress=result.data.merchants.mddress+result.data.merchants.mname;
+              _this.uname=result.data.user.uname;
+              _this.uphone=result.data.user.phone;
+            }).catch(function (error) {
+            alert(error);
+          });
+        },
+         getDfkDindanXqDate(did){
+          this.dfkddxqVisible=true;
+          var _this=this;
+          var params=new URLSearchParams();
+          params.append("did",did);
+          this.$axios.post("queryDdXq.action",params)
+            .then(function (result) {
+              _this.ywcddxqData=result.data;
+              _this.sname=result.data.merchants.sname;
+              _this.phone=result.data.merchants.phone;
+              _this.mddress=result.data.merchants.mddress+result.data.merchants.mname;
+              _this.uname=result.data.user.uname;
+              _this.uphone=result.data.user.phone;
+            }).catch(function (error) {
+            alert(error);
+          });
+        },
+         getDshDindanXqDate(did){
+          this.dshddxqVisible=true;
+          var _this=this;
+          var params=new URLSearchParams();
+          params.append("did",did);
+          this.$axios.post("queryDdXq.action",params)
+            .then(function (result) {
+              _this.ywcddxqData=result.data;
+              _this.sname=result.data.merchants.sname;
+              _this.phone=result.data.merchants.phone;
+              _this.mddress=result.data.merchants.mddress+result.data.merchants.mname;
+              _this.uname=result.data.user.uname;
+              _this.uphone=result.data.user.phone;
+            }).catch(function (error) {
+            alert(error);
+          });
+        },
       },
-      ddxqmouseover($event) {
-        $event.currentTarget.className = "ddxqjinru";
-      },/*鼠标进入事件*/
-      ddxqmouseout($event) {
-        $event.currentTarget.className = "ddxqlikai";
-      },/*鼠标离开事件*/
-      /*查看已完成的订单详情*/
-      getYwcDindanXqDate(did) {
-        this.ywcddxqVisible = true;
-        var _this = this;
-        var params = new URLSearchParams();
-        params.append("did", did);
-        this.$axios.post("queryDdXq.action", params)
-          .then(function (result) {
-            _this.ywcddxqData = result.data;
-            _this.sname = result.data.merchants.sname;
-            _this.phone = result.data.merchants.phone;
-            _this.mddress = result.data.merchants.mddress + result.data.merchants.mname;
-            _this.uname = result.data.user.uname;
-            _this.uphone = result.data.user.phone;
-          }).catch(function (error) {
-          alert(error);
-        });
-      },
-      getDfkDindanXqDate(did) {
-        this.dfkddxqVisible = true;
-        var _this = this;
-        var params = new URLSearchParams();
-        params.append("did", did);
-        this.$axios.post("queryDdXq.action", params)
-          .then(function (result) {
-            _this.ywcddxqData = result.data;
-            _this.sname = result.data.merchants.sname;
-            _this.phone = result.data.merchants.phone;
-            _this.mddress = result.data.merchants.mddress + result.data.merchants.mname;
-            _this.uname = result.data.user.uname;
-            _this.uphone = result.data.user.phone;
-          }).catch(function (error) {
-          alert(error);
-        });
-      },
-      getDshDindanXqDate(did) {
-        this.dshddxqVisible = true;
-        var _this = this;
-        var params = new URLSearchParams();
-        params.append("did", did);
-        this.$axios.post("queryDdXq.action", params)
-          .then(function (result) {
-            _this.ywcddxqData = result.data;
-            _this.sname = result.data.merchants.sname;
-            _this.phone = result.data.merchants.phone;
-            _this.mddress = result.data.merchants.mddress + result.data.merchants.mname;
-            _this.uname = result.data.user.uname;
-            _this.uphone = result.data.user.phone;
-          }).catch(function (error) {
-          alert(error);
-        });
-      },
-      //我的订单去付款
-      goPay(){
-
+      created: function () {
+        this.getDfkDindanDate();
+        this.getDthDindanDate();
+        this.getYwcDindanDate();
       }
-    },
-    created: function () {
-      this.getDfkDindanDate();
-      this.getDthDindanDate();
-      this.getYwcDindanDate();
     }
-  }
 </script>
 
 <style scoped>
-  .ddxqjinru {
+  .ddxqjinru{
     color: #f55d2c;
     font-size: 15px;
   }
-
-  .ddxqlikai {
+  .ddxqlikai{
     color: black;
     font-size: 15px;
   }
