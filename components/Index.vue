@@ -4,7 +4,7 @@
     <carousel></carousel>
     <div style="padding: 20px 80px;background-color: #f7f7f7!important">
       <recommend></recommend>
-      <mainBody></mainBody>
+      <mainBody ref="mainBody"></mainBody>
       <mainFoot></mainFoot>
     </div>
     <mainBottom></mainBottom>
