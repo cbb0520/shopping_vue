@@ -11,7 +11,7 @@
           :before-upload="beforeAvatarUpload"
         >
           <el-tooltip effect="light" content="修改头像" placement="bottom">
-            <el-button type="warning" size="mini" icon="el-icon-plus" circle @click="myeditimg1"></el-button>
+            <el-button type="warning" size="mini" icon="el-icon-plus" circle></el-button>
           </el-tooltip>
         </el-upload>
         <h4>{{indexuaccount2}}</h4>
