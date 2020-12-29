@@ -301,8 +301,9 @@
             params.append("uid",sessionStorage.getItem('uid'));
             this.$axios.post("queryDaiFuKuan.action",params)
               .then(function (result) {
-                if (result.data==""){
+                if (result.data.length < 1){
                   _this.dfkno=true;
+                  _this.dfkdindanDate=[];
                 }else {
                   _this.dfkno=false;
                   _this.dfkdindanDate=result.data;
@@ -317,8 +318,10 @@
           params.append("uid",sessionStorage.getItem('uid'));
           this.$axios.post("queryDaiTiHuo.action",params)
             .then(function (result) {
-              if (result.data==""){
+              console.log(result.data.length)
+              if (result.data.length < 1){
                 _this.dthno=true;
+                _this.dthdindanDate=[];
               }else {
                 _this.dthno=false;
                 _this.dthdindanDate=result.data;
